@@ -1,0 +1,31 @@
+{
+	"name": "autocomplete-wordpress-hooks",
+	"displayName": "Autocomplete WordPress Hooks",
+	"description": "Autocomplete support for WordPress actions and filters.",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.39.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/extension.js",
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "tslint -p ./",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/node": "^10.17.0",
+		"@types/vscode": "^1.32.0",
+		"tslint": "^5.16.0",
+		"typescript": "^3.5.1"
+	},
+	"dependencies": {
+		"@johnbillion/wp-hooks": "^0.1"
+	}
+}
