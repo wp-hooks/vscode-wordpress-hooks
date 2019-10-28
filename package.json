@@ -1,5 +1,5 @@
 {
-	"name": "autocomplete-wordpress-hooks",
+	"name": "vscode-wordpress-hooks",
 	"displayName": "Autocomplete WordPress Hooks",
 	"description": "Autocomplete support for WordPress actions and filters.",
 	"version": "0.0.1",
