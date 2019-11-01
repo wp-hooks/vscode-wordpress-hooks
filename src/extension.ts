@@ -40,41 +40,27 @@ function isInAction(line: string) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-	const actionsProvider = vscode.languages.registerCompletionItemProvider(
+	const hooksProvider = vscode.languages.registerCompletionItemProvider(
 		'php',
 		{
 			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
-				// get all text until the `position` and check if it reads `add_action('`
-				// and if so then complete
+				// get all text until the `position` and check if it reads a certain value and if so then complete
 				let linePrefix = document.lineAt(position).text.substr(0, position.character);
-				if ( ! isInAction( linePrefix ) ) {
-					return undefined;
+
+				if ( isInAction( linePrefix ) ) {
+					return actions.map(get_hook_completion);
 				}
 
-				return actions.map(get_hook_completion);
+				if ( isInFilter( linePrefix ) ) {
+					return filters.map(get_hook_completion);
+				}
+
+				return undefined;
 			}
 		},
 		"'",
 		'"'
 	);
 
-	const filtersProvider = vscode.languages.registerCompletionItemProvider(
-		'php',
-		{
-			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
-				// get all text until the `position` and check if it reads `add_filter('`
-				// and if so then complete
-				let linePrefix = document.lineAt(position).text.substr(0, position.character);
-				if ( ! isInFilter( linePrefix ) ) {
-					return undefined;
-				}
-
-				return filters.map(get_hook_completion);
-			}
-		},
-		"'",
-		'"'
-	);
-
-	context.subscriptions.push(actionsProvider,filtersProvider);
+	context.subscriptions.push(hooksProvider);
 }
