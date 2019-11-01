@@ -31,6 +31,14 @@ function get_hook_completion( hook ) {
 	return completion;
 }
 
+function isInFilter(line: string) {
+	return line.match( /(add|remove)_filter\([\s]*('|")[^"|']*$/ );
+}
+
+function isInAction(line: string) {
+	return line.match( /(add|remove)_action\([\s]*('|")[^"|']*$/ );
+}
+
 export function activate(context: vscode.ExtensionContext) {
 	const actionsProvider = vscode.languages.registerCompletionItemProvider(
 		'php',
@@ -39,14 +47,15 @@ export function activate(context: vscode.ExtensionContext) {
 				// get all text until the `position` and check if it reads `add_action('`
 				// and if so then complete
 				let linePrefix = document.lineAt(position).text.substr(0, position.character);
-				if (!linePrefix.endsWith("add_action('")) {
+				if ( ! isInAction( linePrefix ) ) {
 					return undefined;
 				}
 
 				return actions.map(get_hook_completion);
 			}
 		},
-		"'" // triggered whenever a '(' is being typed
+		"'",
+		'"'
 	);
 
 	const filtersProvider = vscode.languages.registerCompletionItemProvider(
@@ -56,14 +65,15 @@ export function activate(context: vscode.ExtensionContext) {
 				// get all text until the `position` and check if it reads `add_filter('`
 				// and if so then complete
 				let linePrefix = document.lineAt(position).text.substr(0, position.character);
-				if (!linePrefix.endsWith("add_filter('")) {
+				if ( ! isInFilter( linePrefix ) ) {
 					return undefined;
 				}
 
 				return filters.map(get_hook_completion);
 			}
 		},
-		"'" // triggered whenever a '(' is being typed
+		"'",
+		'"'
 	);
 
 	context.subscriptions.push(actionsProvider,filtersProvider);
