@@ -39,6 +39,22 @@ function isInAction(line: string) {
 	return line.match( /(add|remove)_action\([\s]*('|")[^"|']*$/ );
 }
 
+function isInFunctionDeclaration(line: string) {
+	return line.match( /add_(filter|action)\([\s]*['|"]([\S]+?)['|"],[\s]*[\w]*?$/ );
+}
+
+function getHook( name: string ) {
+	var hooks = filters.filter( filter => filter.name === name );
+
+	if ( hooks.length == 0 ) {
+		hooks = actions.filter( action => action.name === name );
+	}
+
+	if ( hooks.length ) {
+		return hooks[0];
+	}
+}
+
 export function activate(context: vscode.ExtensionContext) {
 	const hooksProvider = vscode.languages.registerCompletionItemProvider(
 		'php',
@@ -62,5 +78,39 @@ export function activate(context: vscode.ExtensionContext) {
 		'"'
 	);
 
-	context.subscriptions.push(hooksProvider);
+	const callbackProvider = vscode.languages.registerCompletionItemProvider(
+		'php',
+		{
+			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+				// get all text until the `position` and check if it reads a certain value and if so then complete
+				let linePrefix  = document.lineAt(position).text.substr(0, position.character);
+				let declaration = isInFunctionDeclaration( linePrefix );
+
+				if ( declaration ) {
+					const hook = getHook( declaration[2] );
+
+					if ( ! hook ) {
+						return undefined;
+					}
+
+					const params     = hook.doc.tags.filter( tag => 'param' === tag.name );
+					const argsString = params.map( param => param.variable ).join( ', ' );
+
+					const snippet = 'function (' + ( argsString ? ' ' + argsString + ' ' : '' ) + ') {\n}' + ( params.length ? ', 10, ' + params.length + ' ' : '' );
+
+					var completion = new vscode.CompletionItem(snippet, vscode.CompletionItemKind.Value);
+
+					return [
+						completion
+					];
+				}
+
+				return undefined;
+			}
+		},
+		',',
+		' '
+	);
+
+	context.subscriptions.push(hooksProvider,callbackProvider);
 }
