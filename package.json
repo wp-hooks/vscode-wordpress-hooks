@@ -1,14 +1,22 @@
 {
 	"name": "vscode-wordpress-hooks",
 	"displayName": "Autocomplete WordPress Hooks",
-	"description": "Autocomplete support for WordPress actions and filters.",
+	"description": "Autocomplete provider for WordPress action and filter names",
 	"version": "0.0.1",
+	"publisher": "johnbillion",
+	"author": {
+		"name": "John Blackbourn"
+	},
 	"engines": {
 		"vscode": "^1.39.0"
 	},
 	"categories": [
-		"Other"
+		"Snippets"
 	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/johnbillion/vscode-wordpress-hooks.git"
+	},
 	"activationEvents": [
 		"*"
 	],
