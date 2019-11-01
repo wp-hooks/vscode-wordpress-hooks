@@ -19,6 +19,13 @@ function get_hook_completion( hook ) {
 		description += tag.content;
 	});
 
+	const everything_else = hook.doc.tags.filter( tag => 'param' !== tag.name );
+
+	everything_else.forEach(function( tag ){
+		description += "\n\n";
+		description += '_@' + tag.name + '_' + " " + ( tag.content || "" ) + " " + ( tag.description || "" );
+	});
+
 	completion.documentation = new vscode.MarkdownString( description );
 
 	return completion;
