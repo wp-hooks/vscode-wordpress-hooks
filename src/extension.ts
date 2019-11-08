@@ -93,16 +93,19 @@ export function activate(context: vscode.ExtensionContext) {
 						return undefined;
 					}
 
-					const params     = hook.doc.tags.filter( tag => 'param' === tag.name );
-					const argsString = params.map( param => `\\${param.variable}` ).join( ', ' );
+					const params            = hook.doc.tags.filter( tag => 'param' === tag.name );
+					const snippetArgsString = params.map( param => `\\${param.variable}` ).join( ', ' );
+					const docArgsString     = params.map( param => param.variable ).join( ', ' );
 
-					const snippet = 'function (' + ( argsString ? ' ' + argsString + ' ' : '' ) + ') {\n\t${1}\n}' + ( params.length ? ', 10, ' + params.length + ' ' : '' );
+					const snippetClosure = 'function(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ') {\n\t${1}\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+					const documentationClosure = 'function(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ') {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 
-					var completion = new vscode.CompletionItem(snippet, vscode.CompletionItemKind.Value);
-					completion.insertText = new vscode.SnippetString(snippet);
-					
+					var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Value);
+					completionClosure.insertText = new vscode.SnippetString(snippetClosure);
+					completionClosure.documentation = documentationClosure;
+
 					return [
-						completion
+						completionClosure
 					];
 				}
 
