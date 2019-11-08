@@ -94,12 +94,13 @@ export function activate(context: vscode.ExtensionContext) {
 					}
 
 					const params     = hook.doc.tags.filter( tag => 'param' === tag.name );
-					const argsString = params.map( param => param.variable ).join( ', ' );
+					const argsString = params.map( param => `\\${param.variable}` ).join( ', ' );
 
-					const snippet = 'function (' + ( argsString ? ' ' + argsString + ' ' : '' ) + ') {\n}' + ( params.length ? ', 10, ' + params.length + ' ' : '' );
+					const snippet = 'function (' + ( argsString ? ' ' + argsString + ' ' : '' ) + ') {\n\t${1}\n}' + ( params.length ? ', 10, ' + params.length + ' ' : '' );
 
 					var completion = new vscode.CompletionItem(snippet, vscode.CompletionItemKind.Value);
-
+					completion.insertText = new vscode.SnippetString(snippet);
+					
 					return [
 						completion
 					];
