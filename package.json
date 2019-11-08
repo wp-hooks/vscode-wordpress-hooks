@@ -2,7 +2,7 @@
 	"name": "vscode-wordpress-hooks",
 	"displayName": "Autocomplete WordPress Hooks",
 	"description": "Autocomplete provider for WordPress action and filter names",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"license": "GPL-3.0-or-later",
 	"publisher": "johnbillion",
 	"author": {
