@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import actions from '@johnbillion/wp-hooks/hooks/actions.json';
 import filters from '@johnbillion/wp-hooks/hooks/filters.json';
+import { Hook, Doc, Tag } from '@johnbillion/wp-hooks/interface';
 
-function get_hook_completion( hook ) {
+function get_hook_completion( hook: Hook ): vscode.CompletionItem {
 	var completion = new vscode.CompletionItem(hook.name, vscode.CompletionItemKind.Value);
 	completion.detail = hook.doc.description;
 
@@ -12,7 +13,11 @@ function get_hook_completion( hook ) {
 
 	const params = hook.doc.tags.filter( tag => 'param' === tag.name );
 
-	params.forEach(function( tag ){
+	params.forEach(function( tag: Tag ){
+		if ( ! tag.types ) {
+			return;
+		}
+
 		const types = tag.types.join('|');
 		description += "\n\n";
 		description += '_@param_' + " `" + types + " " + tag.variable + "`  \n";
@@ -21,7 +26,7 @@ function get_hook_completion( hook ) {
 
 	const everything_else = hook.doc.tags.filter( tag => 'param' !== tag.name );
 
-	everything_else.forEach(function( tag ){
+	everything_else.forEach(function( tag: Tag ){
 		description += "\n\n";
 		description += '_@' + tag.name + '_' + " " + ( tag.content || "" ) + " " + ( tag.description || "" );
 	});
@@ -31,19 +36,19 @@ function get_hook_completion( hook ) {
 	return completion;
 }
 
-function isInFilter(line: string) {
+function isInFilter(line: string): RegExpMatchArray | null {
 	return line.match( /(add|remove)_filter\([\s]*('|")[^"|']*$/ );
 }
 
-function isInAction(line: string) {
+function isInAction(line: string): RegExpMatchArray | null {
 	return line.match( /(add|remove)_action\([\s]*('|")[^"|']*$/ );
 }
 
-function isInFunctionDeclaration(line: string) {
+function isInFunctionDeclaration(line: string): RegExpMatchArray | null {
 	return line.match( /add_(filter|action)\([\s]*['|"]([\S]+?)['|"],[\s]*[\w]*?$/ );
 }
 
-function getHook( name: string ) {
+function getHook( name: string ): Hook | void {
 	var hooks = filters.filter( filter => filter.name === name );
 
 	if ( hooks.length == 0 ) {
@@ -55,7 +60,7 @@ function getHook( name: string ) {
 	}
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext): void {
 	const hooksProvider = vscode.languages.registerCompletionItemProvider(
 		'php',
 		{
