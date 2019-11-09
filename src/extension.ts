@@ -98,6 +98,8 @@ export function activate(context: vscode.ExtensionContext): void {
 						return undefined;
 					}
 
+					let completions: vscode.CompletionItem[] = [];
+
 					const params            = hook.doc.tags.filter( tag => 'param' === tag.name );
 					const snippetArgsString = params.map( param => `\\${param.variable}` ).join( ', ' );
 					const docArgsString     = params.map( param => param.variable ).join( ', ' );
@@ -109,9 +111,27 @@ export function activate(context: vscode.ExtensionContext): void {
 					completionClosure.insertText = new vscode.SnippetString(snippetClosure);
 					completionClosure.documentation = documentationClosure;
 
-					return [
-						completionClosure
-					];
+					completions.push( completionClosure );
+
+					if ( 'filter' === hook.type ) {
+						const snippetTrue = "'__return_true' ";
+
+						var completionTrue = new vscode.CompletionItem('Return true', vscode.CompletionItemKind.Value);
+						completionTrue.insertText = new vscode.SnippetString(snippetTrue);
+						completionTrue.documentation = snippetTrue;
+
+						completions.push( completionTrue );
+
+						const snippetFalse = "'__return_false' ";
+
+						var completionFalse = new vscode.CompletionItem('Return false', vscode.CompletionItemKind.Value);
+						completionFalse.insertText = new vscode.SnippetString(snippetFalse);
+						completionFalse.documentation = snippetFalse;
+
+						completions.push( completionFalse );
+					}
+
+					return completions;
 				}
 
 				return undefined;
