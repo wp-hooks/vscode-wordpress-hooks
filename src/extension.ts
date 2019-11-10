@@ -114,21 +114,24 @@ export function activate(context: vscode.ExtensionContext): void {
 					completions.push( completionClosure );
 
 					if ( 'filter' === hook.type ) {
-						const snippetTrue = "'__return_true' ";
+						const snippets = {
+						  __return_true: 'Return true',
+						  __return_false: 'Return false',
+						  __return_zero: 'Return zero',
+						  __return_null: 'Return null',
+						  __return_empty_array: 'Return empty array',
+						  __return_empty_string: 'Return empty string'
+						};
 
-						var completionTrue = new vscode.CompletionItem('Return true', vscode.CompletionItemKind.Value);
-						completionTrue.insertText = new vscode.SnippetString(snippetTrue);
-						completionTrue.documentation = snippetTrue;
+						for ( const [ snippet, documentation ] of Object.entries( snippets ) ) {
+						  snippet = `'${snippet}' `;
 
-						completions.push( completionTrue );
+						  var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Value );
+						  completionItem.insertText = new vscode.SnippetString( snippet );
+						  completionItem.documentation = snippet;
 
-						const snippetFalse = "'__return_false' ";
-
-						var completionFalse = new vscode.CompletionItem('Return false', vscode.CompletionItemKind.Value);
-						completionFalse.insertText = new vscode.SnippetString(snippetFalse);
-						completionFalse.documentation = snippetFalse;
-
-						completions.push( completionFalse );
+						  completions.push( completionItem );
+						}
 					}
 
 					return completions;
