@@ -124,13 +124,13 @@ export function activate(context: vscode.ExtensionContext): void {
 						};
 
 						for ( const [ snippet, documentation ] of Object.entries( snippets ) ) {
-						  snippet = `'${snippet}' `;
+							snippet = `'${snippet}' `;
 
-						  var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Value );
-						  completionItem.insertText = new vscode.SnippetString( snippet );
-						  completionItem.documentation = snippet;
+							var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Value );
+							completionItem.insertText = new vscode.SnippetString( snippet );
+							completionItem.documentation = snippet;
 
-						  completions.push( completionItem );
+							completions.push( completionItem );
 						}
 					}
 
