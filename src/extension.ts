@@ -123,7 +123,7 @@ export function activate(context: vscode.ExtensionContext): void {
 						  __return_empty_string: 'Return empty string'
 						};
 
-						for ( const [ snippet, documentation ] of Object.entries( snippets ) ) {
+						for ( let [ snippet, documentation ] of Object.entries( snippets ) ) {
 							snippet = `'${snippet}' `;
 
 							var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Value );
