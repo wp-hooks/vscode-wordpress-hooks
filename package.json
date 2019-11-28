@@ -29,6 +29,11 @@
 	"activationEvents": [
 		"*"
 	],
+	"galleryBanner": {
+		"color": "#0073aa",
+		"theme": "dark"
+	},
+	"icon": "images/icon.png",
 	"main": "./out/extension.js",
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
