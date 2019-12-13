@@ -37,11 +37,11 @@ function get_hook_completion( hook: Hook ): vscode.CompletionItem {
 }
 
 function isInFilter(line: string): RegExpMatchArray | null {
-	return line.match( /(add|remove)_filter\([\s]*('|")[^"|']*$/ );
+	return line.match( /(add|remove|has|doing)_filter\([\s]*('|")[^"|']*$/ );
 }
 
 function isInAction(line: string): RegExpMatchArray | null {
-	return line.match( /(add|remove)_action\([\s]*('|")[^"|']*$/ );
+	return line.match( /(add|remove|has|doing|did)_action\([\s]*('|")[^"|']*$/ );
 }
 
 function isInFunctionDeclaration(line: string): RegExpMatchArray | null {
