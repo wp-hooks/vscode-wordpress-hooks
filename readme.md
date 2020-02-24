@@ -2,6 +2,8 @@
 
 This extension adds autocomplete support for WordPress action and filter names.
 
+Last updated for WordPress 5.4 beta.
+
 ## Usage
 
 Start typing the name of a WordPress action or filter within `add_action()` or `add_filter()` and you'll get an autocomplete list of all matching actions or filters, plus information about the parameters and usage:

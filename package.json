@@ -51,6 +51,6 @@
 		"typescript": "^3.5.1"
 	},
 	"dependencies": {
-		"@johnbillion/wp-hooks": "^0.2"
+		"@johnbillion/wp-hooks": "^0.4.1"
 	}
 }
