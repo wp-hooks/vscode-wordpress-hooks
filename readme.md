@@ -22,6 +22,24 @@ add_filter( 'template_directory', function( $template_dir, $template, $theme_roo
 }, 10, 3 );
 ```
 
+## FAQ
+
+### Which functions does the autocomplete list work with?
+
+* `add_action()`
+* `add_filter()`
+* `remove_action()`
+* `remove_filter()`
+* `has_action()`
+* `has_filter()`
+* `doing_action()`
+* `doing_filter()`
+* `did_action()`
+
+### How can I trigger the autocomplete list if it doesn't show up?
+
+Place your cursor within the first parameter of one of the supported functions, eg `add_action()` or `add_filter()`, and hit <kbd>ctrl</kbd>+<kbd>&lt;space&gt;</kbd>. This works with any autocomplete provider, not only this extension.
+
 ## License
 
 This extension is free and open source software. It's licensed under the GPLv3.
