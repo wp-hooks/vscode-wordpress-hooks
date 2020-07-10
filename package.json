@@ -30,7 +30,7 @@
 		"url": "https://github.com/johnbillion/vscode-wordpress-hooks/issues"
 	},
 	"activationEvents": [
-		"*"
+		"onLanguage:php"
 	],
 	"galleryBanner": {
 		"color": "#0073aa",
