@@ -1,0 +1,23 @@
+name: Deploy
+on:
+  release:
+    types: [published]
+
+jobs:
+  vscodemarketplace:
+    name: VS Code Marketplace
+    runs-on: ubuntu-18.04
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v2
+
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+
+      - name: clean install dependencies
+        run: npm ci
+
+      - name: deploy
+        run: npm run deploy -p ${{ env.VSCE_TOKEN }}

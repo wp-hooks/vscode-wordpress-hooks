@@ -39,6 +39,7 @@
 	"icon": "images/icon.png",
 	"main": "./out/extension.js",
 	"scripts": {
+		"deploy": "vsce publish",
 		"vscode:prepublish": "webpack --mode production",
 		"webpack": "webpack --mode development",
 		"webpack-dev": "webpack --mode development --watch",
