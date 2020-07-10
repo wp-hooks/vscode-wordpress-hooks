@@ -1,9 +1,12 @@
 .gitignore
+.github
 .vscode/**
 **/.eslintrc.json
 **/*.map
 **/jsconfig.json
+images/screenshot*
 src/**
 test/**
 tsconfig.json
 tslint.json
+webpack.config.js
