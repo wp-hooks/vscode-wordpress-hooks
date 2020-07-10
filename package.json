@@ -39,16 +39,19 @@
 	"icon": "images/icon.png",
 	"main": "./out/extension.js",
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"lint": "tslint -p ./",
-		"watch": "tsc -watch -p ./"
+		"vscode:prepublish": "webpack --mode production",
+		"webpack": "webpack --mode development",
+		"webpack-dev": "webpack --mode development --watch",
+		"test-compile": "tsc -p ./"
 	},
 	"devDependencies": {
 		"@types/node": "^10.17.0",
 		"@types/vscode": "^1.32.0",
+		"ts-loader": "^8.0.0",
 		"tslint": "^5.16.0",
-		"typescript": "^3.5.1"
+		"typescript": "^3.5.1",
+		"webpack": "^4.43.0",
+		"webpack-cli": "^3.3.12"
 	},
 	"dependencies": {
 		"@johnbillion/wp-hooks": "^0.4.1"
