@@ -3,6 +3,7 @@
 .vscode/**
 **/.eslintrc.json
 **/*.map
+**/*.ts
 **/jsconfig.json
 images/screenshot*
 src/**

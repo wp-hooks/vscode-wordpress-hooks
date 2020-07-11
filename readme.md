@@ -1,6 +1,6 @@
 # WordPress Hook Autocompletion for VS Code
 
-This extension adds autocomplete support for WordPress action and filter names.
+This extension provides autocomplete support for WordPress action and filter names.
 
 Last updated for WordPress 5.5 beta.
 
@@ -8,11 +8,11 @@ Last updated for WordPress 5.5 beta.
 
 Start typing the name of a WordPress action or filter within `add_action()` or `add_filter()` and you'll get an autocomplete list of all matching actions or filters, plus information about the parameters and usage:
 
-[![Screenshot](images/screenshot-1.png)](images/screenshot-1.png)
+[![Screenshot of VS Code showing an autocomplete list for the first parameter of the add_filter function](images/screenshot-1.png)](images/screenshot-1.png)
 
 Autocomplete is also provided for the callback function and other built-in callbacks to save you keystrokes:
 
-[![Screenshot](images/screenshot-2.png)](images/screenshot-2.png)
+[![Screenshot of VS Code showing an autocomplete list for the second parameter of the add_filter function](images/screenshot-2.png)](images/screenshot-2.png)
 
 An autocompleted closure callback looks like this:
 
@@ -38,7 +38,7 @@ add_filter( 'template_directory', function( $template_dir, $template, $theme_roo
 
 ### How can I trigger the autocomplete list if it doesn't show up?
 
-Place your cursor within the first parameter of one of the supported functions, eg `add_action()` or `add_filter()`, and hit <kbd>ctrl</kbd>+<kbd>&lt;space&gt;</kbd>. This works with any autocomplete provider, not only this extension.
+Place your cursor within the first parameter of one of the supported functions, eg `add_action()` or `add_filter()`, and hit <kbd>ctrl</kbd>+<kbd>space</kbd>. This works with any autocomplete provider, not only this extension.
 
 ## License
 
