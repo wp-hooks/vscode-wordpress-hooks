@@ -95,50 +95,50 @@ export function activate(context: vscode.ExtensionContext): void {
 					return undefined;
 				}
 
-					const hook = getHook( declaration[2] );
+				const hook = getHook( declaration[2] );
 
-					if ( ! hook ) {
-						return undefined;
-					}
-
-					let completions: vscode.CompletionItem[] = [];
-
-					const params            = hook.doc.tags.filter( tag => 'param' === tag.name );
-					const snippetArgsString = params.map( param => `\\${param.variable}` ).join( ', ' );
-					const docArgsString     = params.map( param => param.variable ).join( ', ' );
-
-					const snippetClosure = 'function(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ') {\n\t${1}\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
-					const documentationClosure = 'function(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ') {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
-
-					var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Value);
-					completionClosure.insertText = new vscode.SnippetString(snippetClosure);
-					completionClosure.documentation = documentationClosure;
-
-					completions.push( completionClosure );
-
-					if ( 'filter' === hook.type ) {
-						const snippets = {
-						  __return_true: 'Return true',
-						  __return_false: 'Return false',
-						  __return_zero: 'Return zero',
-						  __return_null: 'Return null',
-						  __return_empty_array: 'Return empty array',
-						  __return_empty_string: 'Return empty string'
-						};
-
-						for ( let [ snippet, documentation ] of Object.entries( snippets ) ) {
-							snippet = `'${snippet}' `;
-
-							var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Value );
-							completionItem.insertText = new vscode.SnippetString( snippet );
-							completionItem.documentation = snippet;
-
-							completions.push( completionItem );
-						}
-					}
-
-					return completions;
+				if ( ! hook ) {
+					return undefined;
 				}
+
+				let completions: vscode.CompletionItem[] = [];
+
+				const params            = hook.doc.tags.filter( tag => 'param' === tag.name );
+				const snippetArgsString = params.map( param => `\\${param.variable}` ).join( ', ' );
+				const docArgsString     = params.map( param => param.variable ).join( ', ' );
+
+				const snippetClosure = 'function(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ') {\n\t${1}\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+				const documentationClosure = 'function(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ') {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+
+				var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Value);
+				completionClosure.insertText = new vscode.SnippetString(snippetClosure);
+				completionClosure.documentation = documentationClosure;
+
+				completions.push( completionClosure );
+
+				if ( 'filter' === hook.type ) {
+					const snippets = {
+						__return_true: 'Return true',
+						__return_false: 'Return false',
+						__return_zero: 'Return zero',
+						__return_null: 'Return null',
+						__return_empty_array: 'Return empty array',
+						__return_empty_string: 'Return empty string'
+					};
+
+					for ( let [ snippet, documentation ] of Object.entries( snippets ) ) {
+						snippet = `'${snippet}' `;
+
+						var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Value );
+						completionItem.insertText = new vscode.SnippetString( snippet );
+						completionItem.documentation = snippet;
+
+						completions.push( completionItem );
+					}
+				}
+
+				return completions;
+			}
 		},
 		',',
 		' '
