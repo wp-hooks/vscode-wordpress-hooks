@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import actions from '@johnbillion/wp-hooks/hooks/actions.json';
 import filters from '@johnbillion/wp-hooks/hooks/filters.json';
-import { Hook, Doc, Tag } from '@johnbillion/wp-hooks/interface';
+import { Hook, Tag } from '@johnbillion/wp-hooks/interface';
 
 function get_hook_completion( hook: Hook ): vscode.CompletionItem {
 	var completion = new vscode.CompletionItem(hook.name, vscode.CompletionItemKind.Value);
