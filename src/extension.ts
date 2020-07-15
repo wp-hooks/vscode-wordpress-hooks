@@ -91,7 +91,10 @@ export function activate(context: vscode.ExtensionContext): void {
 				let linePrefix  = document.lineAt(position).text.substr(0, position.character);
 				let declaration = isInFunctionDeclaration( linePrefix );
 
-				if ( declaration ) {
+				if ( ! declaration ) {
+					return undefined;
+				}
+
 					const hook = getHook( declaration[2] );
 
 					if ( ! hook ) {
@@ -136,9 +139,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
 					return completions;
 				}
-
-				return undefined;
-			}
 		},
 		',',
 		' '
