@@ -2,7 +2,7 @@
 
 This extension provides autocomplete support for WordPress action and filter names.
 
-Last updated for WordPress 5.5 beta.
+Last updated for WordPress 5.5.
 
 ## Usage
 
