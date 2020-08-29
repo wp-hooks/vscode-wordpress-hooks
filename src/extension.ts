@@ -107,8 +107,16 @@ export function activate(context: vscode.ExtensionContext): void {
 				const snippetArgsString = params.map( param => `\\${param.variable}` ).join( ', ' );
 				const docArgsString     = params.map( param => param.variable ).join( ', ' );
 
-				const snippetClosure = 'function(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ') {\n\t${1}\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
-				const documentationClosure = 'function(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ') {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+				let snippetClosure = null;
+				let documentationClosure = null;
+
+				if ( 'filter' === hook.type ) {
+					snippetClosure = 'function( ' + snippetArgsString + ' ) {\n\t${1}\n\treturn \\' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+					documentationClosure = 'function( ' + docArgsString + ' ) {\n\treturn ' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+				} else {
+					snippetClosure = 'function(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ') {\n\t${1}\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+					documentationClosure = 'function(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ') {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+				}
 
 				var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Value);
 				completionClosure.insertText = new vscode.SnippetString(snippetClosure);
