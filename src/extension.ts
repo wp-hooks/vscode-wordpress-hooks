@@ -107,32 +107,39 @@ export function activate(context: vscode.ExtensionContext): void {
 				const snippetArgsString = params.map( function( param ) {
 					let val = `\\${param.variable}`;
 
+					// No type info? Bail.
 					if ( ! param.types ) {
 						return val;
 					}
 
+					// More than one type? Bail.
 					if ( param.types.length !== 1 ) {
 						return val;
 					}
 
 					let type = param.types[0];
 
+					// Un-hintable type? Bail.
 					if ( [ 'null', 'mixed' ].includes( type ) ) {
 						return val;
 					}
 
+					// Hinting for typed-arrays.
 					if ( type.indexOf( '[]' ) !== -1 ) {
 						type = 'array';
 					}
 
+					// Aliases for bool.
 					if ( [ 'false', 'true', 'boolean' ].includes( type ) ) {
 						type = 'bool';
 					}
 
+					// Alias for callable.
 					if ( type === 'callback' ) {
 						type = 'callable';
 					}
 
+					// Alias for int.
 					if ( type === 'integer' ) {
 						type = 'int';
 					}
