@@ -104,8 +104,42 @@ export function activate(context: vscode.ExtensionContext): void {
 				let completions: vscode.CompletionItem[] = [];
 
 				const params            = hook.doc.tags.filter( tag => 'param' === tag.name );
-				const snippetArgsString = params.map( param => `\\${param.variable}` ).join( ', ' );
-				const docArgsString     = params.map( param => param.variable ).join( ', ' );
+				const snippetArgsString = params.map( function( param ) {
+					let val = `\\${param.variable}`;
+
+					if ( ! param.types ) {
+						return val;
+					}
+
+					if ( param.types.length !== 1 ) {
+						return val;
+					}
+
+					let type = param.types[0];
+
+					if ( [ 'null', 'mixed' ].includes( type ) ) {
+						return val;
+					}
+
+					if ( type.indexOf( '[]' ) !== -1 ) {
+						type = 'array';
+					}
+
+					if ( [ 'false', 'true', 'boolean' ].includes( type ) ) {
+						type = 'bool';
+					}
+
+					if ( type === 'callback' ) {
+						type = 'callable';
+					}
+
+					if ( type === 'integer' ) {
+						type = 'int';
+					}
+
+					return type + ' ' + val;
+				} ).join( ', ' );
+				const docArgsString = snippetArgsString.replace( /\\\$/g, '$' );
 
 				let snippetClosure = null;
 				let documentationClosure = null;
