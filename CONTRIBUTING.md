@@ -56,3 +56,9 @@ These are the steps to take to release a new version of the extension (for contr
 1. Enter the changelog into [the release on GitHub](https://github.com/johnbillion/vscode-wordpress-hooks/releases) and publish it.
 
 Publishing a release on GitHub triggers an action which deploys the release to the VS Marketplace. No need to touch `vsce`.
+
+### Manual Deployment
+
+If necessary, manual deployment to the VS Marketplace can be done with:
+
+    npm run deploy
