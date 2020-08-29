@@ -1,4 +1,4 @@
-# WordPress Hook Autocompletion for VS Code
+# Autocomplete WordPress Hooks for VS Code
 
 This extension provides autocomplete support for WordPress action and filter names.
 
