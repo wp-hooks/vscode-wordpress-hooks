@@ -62,9 +62,7 @@ function getHook( name: string ): Hook | void {
 }
 
 function getTagType( tag: Tag ): string | null {
-	const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.enable') ?? true;
-	let typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.olderPhpVersionSupport') ?? '';
-	let typeDeclarationsSupport: number;
+	const typeDeclarationsSupport = getMinPHPVersion();
 
 	// https://www.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration
 	const allowedTypes: { [key: string]: number } = {
@@ -79,14 +77,8 @@ function getTagType( tag: Tag ): string | null {
 		'object' :   7.2,
 	};
 
-	if ( ! typeDeclarationsSupportSetting || 'None' === typeDeclarationsSupportSetting ) {
-		typeDeclarationsSupport = 999;
-	} else {
-		typeDeclarationsSupport = parseFloat( typeDeclarationsSupportSetting );
-	}
-
 	// Type declarations disabled? Bail.
-	if ( ! typeDeclarationsEnabled ) {
+	if ( ! typeDeclarationsSupport ) {
 		return null;
 	}
 
@@ -133,6 +125,21 @@ function getTagType( tag: Tag ): string | null {
 	}
 
 	return type;
+}
+
+function getMinPHPVersion() : number {
+	const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.enable') ?? true;
+	let typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.olderPhpVersionSupport') ?? '';
+
+	if ( ! typeDeclarationsEnabled ) {
+		return 0;
+	}
+
+	if ( ! typeDeclarationsSupportSetting || 'None' === typeDeclarationsSupportSetting ) {
+		return 999;
+	}
+
+	return parseFloat( typeDeclarationsSupportSetting );
 }
 
 export function activate(context: vscode.ExtensionContext): void {
