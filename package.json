@@ -32,6 +32,31 @@
 	"activationEvents": [
 		"onLanguage:php"
 	],
+	"contributes": {
+		"configuration": [
+			{
+				"title": "Autocomplete WordPress Hooks",
+				"properties": {
+					"vscode-wordpress-hooks.typeDeclarations.enable": {
+						"type": "boolean",
+						"default": true,
+						"description": "Add type declarations (also known as type hints) to autocompleted callback functions"
+					},
+					"vscode-wordpress-hooks.typeDeclarations.olderPhpVersionSupport": {
+						"type": "string",
+						"description": "PHP 7.2 or higher is required to support the full set of type declaration features. If you need to support an older PHP version, select it here",
+						"default": "None",
+						"enum": [
+							"None",
+							"7.1",
+							"7.0",
+							"5.6"
+						]
+					}
+				}
+			}
+		]
+	},
 	"galleryBanner": {
 		"color": "#0073aa",
 		"theme": "dark"

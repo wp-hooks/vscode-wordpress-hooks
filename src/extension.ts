@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import actions from '@johnbillion/wp-hooks/hooks/actions.json';
 import filters from '@johnbillion/wp-hooks/hooks/filters.json';
 import { Hook, Tag } from '@johnbillion/wp-hooks/interface';
+import * as meta from '../package.json';
 
 function get_hook_completion( hook: Hook ): vscode.CompletionItem {
 	var completion = new vscode.CompletionItem(hook.name, vscode.CompletionItemKind.Value);
@@ -103,9 +104,37 @@ export function activate(context: vscode.ExtensionContext): void {
 
 				let completions: vscode.CompletionItem[] = [];
 
+				// https://www.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration
+				const allowedTypes: { [key: string]: number } = {
+					'self' :     5.0,
+					'array' :    5.1,
+					'callable' : 5.4,
+					'bool' :     7.0,
+					'float' :    7.0,
+					'int' :      7.0,
+					'string' :   7.0,
+					'iterable' : 7.1,
+					'object' :   7.2,
+				};
+
+				const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.enable') ?? true;
+				let typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.olderPhpVersionSupport') ?? '';
+				let typeDeclarationsSupport: number;
+
+				if ( ! typeDeclarationsSupportSetting || 'None' === typeDeclarationsSupportSetting ) {
+					typeDeclarationsSupport = 999;
+				} else {
+					typeDeclarationsSupport = parseFloat( typeDeclarationsSupportSetting );
+				}
+
 				const params            = hook.doc.tags.filter( tag => 'param' === tag.name );
 				const snippetArgsString = params.map( function( param ) {
 					let val = `\\${param.variable}`;
+
+					// Type declarations disabled? Bail.
+					if ( ! typeDeclarationsEnabled ) {
+						return val;
+					}
 
 					// No type info? Bail.
 					if ( ! param.types ) {
@@ -142,6 +171,11 @@ export function activate(context: vscode.ExtensionContext): void {
 					// Alias for int.
 					if ( type === 'integer' ) {
 						type = 'int';
+					}
+
+					// Check the allowed types, ignoring unknown types such as class and interface names.
+					if ( allowedTypes[ type ] && ( allowedTypes[ type ] > typeDeclarationsSupport ) ) {
+						return val;
 					}
 
 					return type + ' ' + val;
