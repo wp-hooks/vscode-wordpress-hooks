@@ -61,6 +61,80 @@ function getHook( name: string ): Hook | void {
 	}
 }
 
+function getTagType( tag: Tag ): string | null {
+	const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.enable') ?? true;
+	let typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.olderPhpVersionSupport') ?? '';
+	let typeDeclarationsSupport: number;
+
+	// https://www.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration
+	const allowedTypes: { [key: string]: number } = {
+		'self' :     5.0,
+		'array' :    5.1,
+		'callable' : 5.4,
+		'bool' :     7.0,
+		'float' :    7.0,
+		'int' :      7.0,
+		'string' :   7.0,
+		'iterable' : 7.1,
+		'object' :   7.2,
+	};
+
+	if ( ! typeDeclarationsSupportSetting || 'None' === typeDeclarationsSupportSetting ) {
+		typeDeclarationsSupport = 999;
+	} else {
+		typeDeclarationsSupport = parseFloat( typeDeclarationsSupportSetting );
+	}
+
+	// Type declarations disabled? Bail.
+	if ( ! typeDeclarationsEnabled ) {
+		return null;
+	}
+
+	// No type info? Bail.
+	if ( ! tag.types ) {
+		return null;
+	}
+
+	// More than one type? Bail.
+	if ( tag.types.length !== 1 ) {
+		return null;
+	}
+
+	let type = tag.types[0];
+
+	// Un-hintable type? Bail.
+	if ( [ 'null', 'mixed' ].includes( type ) ) {
+		return null;
+	}
+
+	// Hinting for typed-arrays.
+	if ( type.indexOf( '[]' ) !== -1 ) {
+		type = 'array';
+	}
+
+	// Aliases for bool.
+	if ( [ 'false', 'true', 'boolean' ].includes( type ) ) {
+		type = 'bool';
+	}
+
+	// Alias for callable.
+	if ( type === 'callback' ) {
+		type = 'callable';
+	}
+
+	// Alias for int.
+	if ( type === 'integer' ) {
+		type = 'int';
+	}
+
+	// Check the allowed types, ignoring unknown types such as class and interface names.
+	if ( allowedTypes[ type ] && ( allowedTypes[ type ] > typeDeclarationsSupport ) ) {
+		return null;
+	}
+
+	return type;
+}
+
 export function activate(context: vscode.ExtensionContext): void {
 	const hooksProvider = vscode.languages.registerCompletionItemProvider(
 		'php',
@@ -104,81 +178,14 @@ export function activate(context: vscode.ExtensionContext): void {
 
 				let completions: vscode.CompletionItem[] = [];
 
-				// https://www.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration
-				const allowedTypes: { [key: string]: number } = {
-					'self' :     5.0,
-					'array' :    5.1,
-					'callable' : 5.4,
-					'bool' :     7.0,
-					'float' :    7.0,
-					'int' :      7.0,
-					'string' :   7.0,
-					'iterable' : 7.1,
-					'object' :   7.2,
-				};
-
 				const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.enable') ?? true;
-				let typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.olderPhpVersionSupport') ?? '';
-				let typeDeclarationsSupport: number;
-
-				if ( ! typeDeclarationsSupportSetting || 'None' === typeDeclarationsSupportSetting ) {
-					typeDeclarationsSupport = 999;
-				} else {
-					typeDeclarationsSupport = parseFloat( typeDeclarationsSupportSetting );
-				}
 
 				const params            = hook.doc.tags.filter( tag => 'param' === tag.name );
 				const snippetArgsString = params.map( function( param ) {
 					let val = `\\${param.variable}`;
+					let type = getTagType( param );
 
-					// Type declarations disabled? Bail.
-					if ( ! typeDeclarationsEnabled ) {
-						return val;
-					}
-
-					// No type info? Bail.
-					if ( ! param.types ) {
-						return val;
-					}
-
-					// More than one type? Bail.
-					if ( param.types.length !== 1 ) {
-						return val;
-					}
-
-					let type = param.types[0];
-
-					// Un-hintable type? Bail.
-					if ( [ 'null', 'mixed' ].includes( type ) ) {
-						return val;
-					}
-
-					// Hinting for typed-arrays.
-					if ( type.indexOf( '[]' ) !== -1 ) {
-						type = 'array';
-					}
-
-					// Aliases for bool.
-					if ( [ 'false', 'true', 'boolean' ].includes( type ) ) {
-						type = 'bool';
-					}
-
-					// Alias for callable.
-					if ( type === 'callback' ) {
-						type = 'callable';
-					}
-
-					// Alias for int.
-					if ( type === 'integer' ) {
-						type = 'int';
-					}
-
-					// Check the allowed types, ignoring unknown types such as class and interface names.
-					if ( allowedTypes[ type ] && ( allowedTypes[ type ] > typeDeclarationsSupport ) ) {
-						return val;
-					}
-
-					return type + ' ' + val;
+					return type ? ( type + ' ' + val ) : val;
 				} ).join( ', ' );
 				const docArgsString = snippetArgsString.replace( /\\\$/g, '$' );
 
