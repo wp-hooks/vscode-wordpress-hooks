@@ -128,10 +128,8 @@ function getTagType( tag: Tag ): string | null {
 }
 
 function getReturnType( tag: Tag ) : string | null {
-	const typeDeclarationsSupport = getMinPHPVersion();
-
 	// Return type declarations require PHP 7 or higher.
-	if ( typeDeclarationsSupport < 7 ) {
+	if ( getMinPHPVersion() < 7 ) {
 		return null;
 	}
 
@@ -196,8 +194,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
 				let completions: vscode.CompletionItem[] = [];
 
-				const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.enable') ?? true;
-
 				const params            = hook.doc.tags.filter( tag => 'param' === tag.name );
 				const snippetArgsString = params.map( function( param ) {
 					let val = `\\${param.variable}`;
@@ -223,7 +219,8 @@ export function activate(context: vscode.ExtensionContext): void {
 					snippetClosure = 'function( ' + snippetArgsString + ' )' + returnTypeString + ' {\n\t${1}\n\treturn \\' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 					documentationClosure = 'function( ' + docArgsString + ' )' + returnTypeString + ' {\n\treturn ' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 				} else {
-					let returnTypeString = typeDeclarationsEnabled ? ' : void' : '';
+					let returnTypeString = ( getMinPHPVersion() >= 7.1 )
+						? ' : void' : '';
 					snippetClosure = 'function(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n\t${1}\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 					documentationClosure = 'function(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 				}
