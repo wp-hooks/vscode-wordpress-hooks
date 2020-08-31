@@ -257,9 +257,14 @@ export function activate(context: vscode.ExtensionContext): void {
 				completionClosure.insertText = new vscode.SnippetString(snippetClosure);
 				completionClosure.documentation = documentationClosure;
 				completionClosure.preselect = true;
-				completionClosure.additionalTextEdits = [
-					vscode.TextEdit.insert( position.with( { character: 0 } ), docblockClosure ),
-				];
+
+				const docBlocksEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('docBlocks.enable') ?? true;
+
+				if ( docBlocksEnabled ) {
+					completionClosure.additionalTextEdits = [
+						vscode.TextEdit.insert( position.with( { character: 0 } ), docblockClosure ),
+					];
+				}
 
 				completions.push( completionClosure );
 

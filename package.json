@@ -37,6 +37,11 @@
 			{
 				"title": "Autocomplete WordPress Hooks",
 				"properties": {
+					"vscode-wordpress-hooks.docBlocks.enable": {
+						"type": "boolean",
+						"default": true,
+						"description": "Add docblocks to autocompleted callback functions"
+					},
 					"vscode-wordpress-hooks.typeDeclarations.enable": {
 						"type": "boolean",
 						"default": true,
