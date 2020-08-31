@@ -228,6 +228,7 @@ export function activate(context: vscode.ExtensionContext): void {
 				var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Value);
 				completionClosure.insertText = new vscode.SnippetString(snippetClosure);
 				completionClosure.documentation = documentationClosure;
+				completionClosure.preselect = true;
 
 				completions.push( completionClosure );
 
