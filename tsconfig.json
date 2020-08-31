@@ -6,8 +6,7 @@
 		"sourceMap": true,
 		"strict": true,
 		"resolveJsonModule": true,
-		"esModuleInterop": true,
-		"rootDir": "src"
+		"esModuleInterop": true
 	},
 	"exclude": [
 		"node_modules"
