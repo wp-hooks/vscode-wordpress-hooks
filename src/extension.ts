@@ -205,6 +205,16 @@ export function activate(context: vscode.ExtensionContext): void {
 
 				let snippetClosure = null;
 				let documentationClosure = null;
+				let docblockLines = [
+					' ' + hook.doc.description,
+					'',
+				];
+
+				params.forEach( function( param ) {
+					docblockLines.push( ' @param ' + param.types?.join( '|' ) + ' ' + param.variable + ' ' + param.content );
+				} );
+
+				let docblockClosure = '/**\n *' + docblockLines.join( '\n *' ) + '\n */\n';
 
 				if ( 'filter' === hook.type ) {
 					let returnType = null;
@@ -229,6 +239,9 @@ export function activate(context: vscode.ExtensionContext): void {
 				completionClosure.insertText = new vscode.SnippetString(snippetClosure);
 				completionClosure.documentation = documentationClosure;
 				completionClosure.preselect = true;
+				completionClosure.additionalTextEdits = [
+					vscode.TextEdit.insert( position.with( { character: 0 } ), docblockClosure ),
+				];
 
 				completions.push( completionClosure );
 
