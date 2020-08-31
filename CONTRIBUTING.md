@@ -20,11 +20,7 @@ You can clone this repo and then run the extension in development mode in VS Cod
 
        npm install
 
-2. Build the files and start the file watcher:
-
-       npm run webpack-dev
-
-3. Open the directory in VS Code and launch the extension from the `Run` panel.
+2. Open the directory in VS Code and launch the extension from the `Run` panel.
 
 The extension source code can be found in `src/extension.ts`.
 
