@@ -210,8 +210,24 @@ export function activate(context: vscode.ExtensionContext): void {
 					'',
 				];
 
+				let longestParamType = 0;
+				let longestParamName = 0;
+
 				params.forEach( function( param ) {
-					docblockLines.push( ' @param ' + param.types?.join( '|' ) + ' ' + param.variable + ' ' + param.content );
+					const paramTypeLength = param.types?.join( '|' ).length || 0;
+					const paramNameLength = param.variable?.length || 0;
+
+					if ( paramTypeLength > longestParamType ) {
+						longestParamType = paramTypeLength;
+					}
+
+					if ( paramNameLength > longestParamName ) {
+						longestParamName = paramNameLength;
+					}
+				} );
+
+				params.forEach( function( param ) {
+					docblockLines.push( ' @param ' + ( param.types?.join( '|' ).padEnd( longestParamType, ' ' ) || '' ) + ' ' + ( param.variable?.padEnd( longestParamName, ' ' ) || '' ) + ' ' + param.content );
 				} );
 
 				let docblockClosure = '/**\n *' + docblockLines.join( '\n *' ) + '\n */\n';
