@@ -230,8 +230,6 @@ export function activate(context: vscode.ExtensionContext): void {
 					docblockLines.push( ' @param ' + ( param.types?.join( '|' ).padEnd( longestParamType, ' ' ) || '' ) + ' ' + ( param.variable?.padEnd( longestParamName, ' ' ) || '' ) + ' ' + param.content );
 				} );
 
-				let docblockClosure = '/**\n *' + docblockLines.join( '\n *' ) + '\n */\n';
-
 				if ( 'filter' === hook.type ) {
 					let returnType = null;
 					let returnTypeString = '';
@@ -244,12 +242,16 @@ export function activate(context: vscode.ExtensionContext): void {
 
 					snippetClosure = 'function( ' + snippetArgsString + ' )' + returnTypeString + ' {\n\t${1}\n\treturn \\' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 					documentationClosure = 'function( ' + docArgsString + ' )' + returnTypeString + ' {\n\treturn ' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+
+					docblockLines.push( ' @return ' + ( params[0].types?.join( '|' ) || '' ) + ' ' + params[0].content );
 				} else {
 					let returnTypeString = ( getMinPHPVersion() >= 7.1 )
 						? ' : void' : '';
 					snippetClosure = 'function(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n\t${1}\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 					documentationClosure = 'function(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 				}
+
+				let docblockClosure = '/**\n *' + docblockLines.join( '\n *' ) + '\n */\n';
 
 				var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Value);
 				completionClosure.insertText = new vscode.SnippetString(snippetClosure);
