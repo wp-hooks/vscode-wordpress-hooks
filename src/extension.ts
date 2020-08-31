@@ -127,6 +127,17 @@ function getTagType( tag: Tag ): string | null {
 	return type;
 }
 
+function getReturnType( tag: Tag ) : string | null {
+	const typeDeclarationsSupport = getMinPHPVersion();
+
+	// Return type declarations require PHP 7 or higher.
+	if ( typeDeclarationsSupport < 7 ) {
+		return null;
+	}
+
+	return getTagType( tag );
+}
+
 function getMinPHPVersion() : number {
 	const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.enable') ?? true;
 	let typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.olderPhpVersionSupport') ?? '';
@@ -200,11 +211,21 @@ export function activate(context: vscode.ExtensionContext): void {
 				let documentationClosure = null;
 
 				if ( 'filter' === hook.type ) {
-					snippetClosure = 'function( ' + snippetArgsString + ' ) {\n\t${1}\n\treturn \\' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
-					documentationClosure = 'function( ' + docArgsString + ' ) {\n\treturn ' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+					let returnType = null;
+					let returnTypeString = '';
+
+					returnType = getReturnType( params[0] );
+
+					if ( returnType ) {
+						returnTypeString = ' : ' + returnType;
+					}
+
+					snippetClosure = 'function( ' + snippetArgsString + ' )' + returnTypeString + ' {\n\t${1}\n\treturn \\' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+					documentationClosure = 'function( ' + docArgsString + ' )' + returnTypeString + ' {\n\treturn ' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 				} else {
-					snippetClosure = 'function(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ') {\n\t${1}\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
-					documentationClosure = 'function(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ') {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+					let returnTypeString = typeDeclarationsEnabled ? ' : void' : '';
+					snippetClosure = 'function(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n\t${1}\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+					documentationClosure = 'function(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 				}
 
 				var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Value);
