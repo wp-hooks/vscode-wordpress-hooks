@@ -42,6 +42,10 @@ Place your cursor within the first parameter of one of the supported functions, 
 
 Yes, open the preferences for VS Code and go to the **Extensions -> Autocomplete WordPress Hooks** section.
 
+### Where does the list of hook names come from?
+
+They're generated directly from the WordPress core software and updated in time for each new release. They're bundled with this extension, so there's no requirement for your project to include WordPress, and the extension doesn't scan the files in your project looking for actions and filters.
+
 ## License
 
 This extension is free and open source software. It's licensed under the GNU GPL version 3.
