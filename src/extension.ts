@@ -339,10 +339,6 @@ export function activate(context: vscode.ExtensionContext): void {
 
 							const context = getContainingSymbol( symbols, position );
 
-							if ( ! context ) {
-								return completions;
-							}
-
 							let functionName = hook.name.replace( /[\{\}\$]/g, '' );
 
 							if ( context.inMethod ) {
