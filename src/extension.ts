@@ -266,6 +266,8 @@ export function activate(context: vscode.ExtensionContext): void {
 					docblockLines.push( ' @param ' + ( param.types?.join( '|' ).padEnd( longestParamType, ' ' ) || '' ) + ' ' + ( param.variable?.padEnd( longestParamName, ' ' ) || '' ) + ' ' + param.content );
 				} );
 
+				const suffix = ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+
 				if ( 'filter' === hook.type ) {
 					let returnType = null;
 					let returnTypeString = '';
@@ -276,22 +278,22 @@ export function activate(context: vscode.ExtensionContext): void {
 						returnTypeString = ' : ' + returnType;
 					}
 
-					snippetCallback = '( ' + snippetArgsString + ' )' + returnTypeString + ' {\n\t${1}\n\treturn \\' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
-					documentationCallback = '( ' + docArgsString + ' )' + returnTypeString + ' {\n\treturn ' + params[0].variable + ';\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+					snippetCallback = '( ' + snippetArgsString + ' )' + returnTypeString + ' {\n\t${1}\n\treturn \\' + params[0].variable + ';\n}';
+					documentationCallback = '( ' + docArgsString + ' )' + returnTypeString + ' {\n\treturn ' + params[0].variable + ';\n}';
 
 					docblockLines.push( ' @return ' + ( params[0].types?.join( '|' ) || '' ) + ' ' + params[0].content );
 				} else {
 					let returnTypeString = ( getMinPHPVersion() >= 7.1 )
 						? ' : void' : '';
-					snippetCallback = '(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n\t${1}\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
-					documentationCallback = '(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+					snippetCallback = '(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n\t${1}\n}';
+					documentationCallback = '(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n}';
 				}
 
 				let docblockCallback = '/**\n *' + docblockLines.join( '\n *' ) + '\n */\n';
 
 				var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Function);
-				completionClosure.insertText = new vscode.SnippetString( `function${snippetCallback}` );
-				completionClosure.documentation = `function${documentationCallback}`;
+				completionClosure.insertText = new vscode.SnippetString( `function${snippetCallback}${suffix}` );
+				completionClosure.documentation = `function${documentationCallback}${suffix}`;
 				completionClosure.preselect = true;
 
 				const docBlocksEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('docBlocks.enable') ?? true;
@@ -343,8 +345,8 @@ export function activate(context: vscode.ExtensionContext): void {
 
 							if ( context.inMethod && context.symbol ) {
 								let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Method);
-								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${hook.type}_${functionName}' ]` );
-								completionMethod.documentation = `[ \$this, '${hook.type}_${functionName}' ]\n\npublic function ${hook.type}_${functionName}${documentationCallback}`;
+								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${hook.type}_${functionName}' ]${suffix}` );
+								completionMethod.documentation = `[ \$this, '${hook.type}_${functionName}' ]${suffix}\n\npublic function ${hook.type}_${functionName}${documentationCallback}`;
 								completionMethod.preselect = true;
 								completionMethod.sortText = 'a';
 								completionMethod.additionalTextEdits = [];
@@ -366,11 +368,11 @@ export function activate(context: vscode.ExtensionContext): void {
 								const insertFunction = `\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
 
 								if ( context.inNamespace ) {
-									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\${hook.type}_${functionName}'` );
-									completionFunction.documentation = `__NAMESPACE__ . '\\\\${hook.type}_${functionName}'\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
+									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\${hook.type}_${functionName}'${suffix}` );
+									completionFunction.documentation = `__NAMESPACE__ . '\\\\${hook.type}_${functionName}'${suffix}\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
 								} else {
-									completionFunction.insertText = new vscode.SnippetString( `'${hook.type}_${functionName}'` );
-									completionFunction.documentation = `'${hook.type}_${functionName}'\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
+									completionFunction.insertText = new vscode.SnippetString( `'${hook.type}_${functionName}'${suffix}` );
+									completionFunction.documentation = `'${hook.type}_${functionName}'${suffix}\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
 								}
 
 								completionFunction.preselect = true;
