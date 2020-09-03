@@ -383,35 +383,25 @@ export function activate(context: vscode.ExtensionContext): void {
 								completionFunction.sortText = 'a';
 								completionFunction.additionalTextEdits = [];
 
+								let insertionPosition: vscode.Position = document.lineAt(position.line).range.end;
+
 								if ( context.symbol ) {
-									completionFunction.additionalTextEdits.push(
-										vscode.TextEdit.insert( context.symbol.range.end, `\n\n` ),
-									);
+									insertionPosition = context.symbol.range.end;
+								}
 
-									if ( docBlocksEnabled ) {
-										completionFunction.additionalTextEdits.push(
-											vscode.TextEdit.insert( context.symbol.range.end, `${docblockCallback}` ),
-										);
-									}
+								completionFunction.additionalTextEdits.push(
+									vscode.TextEdit.insert( insertionPosition, `\n\n` ),
+								);
 
+								if ( docBlocksEnabled ) {
 									completionFunction.additionalTextEdits.push(
-										vscode.TextEdit.insert( context.symbol.range.end, insertFunction ),
-									);
-								} else {
-									completionFunction.additionalTextEdits.push(
-										vscode.TextEdit.insert( document.lineAt(position.line).range.end, `\n\n` ),
-									);
-
-									if ( docBlocksEnabled ) {
-										completionFunction.additionalTextEdits.push(
-											vscode.TextEdit.insert( document.lineAt(position.line).range.end, `${docblockCallback}` ),
-										);
-									}
-
-									completionFunction.additionalTextEdits.push(
-										vscode.TextEdit.insert( document.lineAt(position.line).range.end, insertFunction ),
+										vscode.TextEdit.insert( insertionPosition, docblockCallback ),
 									);
 								}
+
+								completionFunction.additionalTextEdits.push(
+									vscode.TextEdit.insert( insertionPosition, insertFunction ),
+								);
 
 								completions.push( completionFunction );
 							}
