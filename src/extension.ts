@@ -346,7 +346,7 @@ export function activate(context: vscode.ExtensionContext): void {
 							if ( context.inMethod && context.symbol ) {
 								let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Method);
 								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${functionName}' ]${suffix}` );
-								completionMethod.documentation = `[ \$this, '${functionName}' ]${suffix}\n\npublic function_${functionName}${documentationCallback}`;
+								completionMethod.documentation = `[ \$this, '${functionName}' ]${suffix}\n\npublic function ${functionName}${documentationCallback}`;
 								completionMethod.preselect = true;
 								completionMethod.sortText = 'a';
 								completionMethod.additionalTextEdits = [];
