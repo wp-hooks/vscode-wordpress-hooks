@@ -151,6 +151,27 @@ function getMinPHPVersion() : number {
 	return parseFloat( typeDeclarationsSupportSetting );
 }
 
+function getContainingSymbol( symbols: vscode.DocumentSymbol[], position: vscode.Position ) : vscode.DocumentSymbol | null {
+	const inside = symbols.filter(symbol => symbol.range.contains(position));
+
+	if ( ! inside.length ) {
+		return null;
+	}
+
+	let containing: vscode.DocumentSymbol = inside[0];
+
+	inside.forEach(function(symbol){
+		if ( symbol.children.length ) {
+			const insideInside = getContainingSymbol( symbol.children, position );
+			if ( insideInside ) {
+				containing = insideInside;
+			}
+		}
+	});
+
+	return containing;
+}
+
 export function activate(context: vscode.ExtensionContext): void {
 	const hooksProvider = vscode.languages.registerCompletionItemProvider(
 		'php',
@@ -287,6 +308,54 @@ export function activate(context: vscode.ExtensionContext): void {
 
 						completions.push( completionItem );
 					}
+				}
+
+				if (vscode.window.activeTextEditor !== undefined) {
+					return vscode.commands
+						.executeCommand<vscode.DocumentSymbol[]>(
+							'vscode.executeDocumentSymbolProvider',
+							vscode.window.activeTextEditor.document.uri
+						)
+						.then(symbols => {
+							if (symbols === undefined) {
+								return completions;
+							}
+
+							// this could be made async
+							const symbol = getContainingSymbol( symbols, position );
+
+							if ( ! symbol ) {
+								return completions;
+							}
+
+							let functionName = hook.name.replace( /[\{\}\$]/g, '' );
+
+							switch ( symbol.kind ) {
+
+								case vscode.SymbolKind.Method:
+									let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Value);
+									completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${hook.type}_${functionName}' ]` );
+									completionMethod.documentation = 'Method callback';
+									completionMethod.preselect = true;
+									completionMethod.sortText = 'a';
+									completions.push( completionMethod );
+									break;
+
+								// @TODO this needs to trigger when the cursor is not inside anything
+								case vscode.SymbolKind.Function:
+									let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Value);
+									completionFunction.insertText = new vscode.SnippetString( `'${hook.type}_${functionName}'` );
+									completionFunction.documentation = 'Function callback';
+									completionFunction.preselect = true;
+									completionFunction.sortText = 'a';
+									completions.push( completionFunction );
+									break;
+
+							}
+
+							return completions;
+						})
+					;
 				}
 
 				return completions;
