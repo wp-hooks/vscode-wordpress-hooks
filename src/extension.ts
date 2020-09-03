@@ -347,13 +347,15 @@ export function activate(context: vscode.ExtensionContext): void {
 								completionMethod.documentation = `[ \$this, '${hook.type}_${functionName}' ]\n\npublic function ${hook.type}_${functionName}${documentationCallback}`;
 								completionMethod.preselect = true;
 								completionMethod.sortText = 'a';
-								completions.push( completionMethod );
+								completionMethod.additionalTextEdits = [];
 
 								if ( docBlocksEnabled ) {
-									completionMethod.additionalTextEdits = [
+									completionMethod.additionalTextEdits.push(
 										vscode.TextEdit.insert( context.symbol.range.end, `\n\n${docblockCallback}` ),
-									];
+									);
 								}
+
+								completions.push( completionMethod );
 							} else {
 								let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Function);
 
@@ -367,21 +369,23 @@ export function activate(context: vscode.ExtensionContext): void {
 
 								completionFunction.preselect = true;
 								completionFunction.sortText = 'a';
-								completions.push( completionFunction );
+								completionFunction.additionalTextEdits = [];
 
 								if ( context.symbol ) {
 									if ( docBlocksEnabled ) {
-										completionFunction.additionalTextEdits = [
+										completionFunction.additionalTextEdits.push(
 											vscode.TextEdit.insert( context.symbol.range.end, `\n\n${docblockCallback}` ),
-										];
+										);
 									}
 								} else {
 									if ( docBlocksEnabled ) {
-										completionFunction.additionalTextEdits = [
+										completionFunction.additionalTextEdits.push(
 											vscode.TextEdit.insert( document.lineAt(position.line).range.end, `\n\n${docblockCallback}` ),
-										];
+										);
 									}
 								}
+
+								completions.push( completionFunction );
 							}
 
 							return completions;
