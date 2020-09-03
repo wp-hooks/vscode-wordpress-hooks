@@ -368,7 +368,7 @@ export function activate(context: vscode.ExtensionContext): void {
 								const insertFunction = `\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
 
 								if ( context.inNamespace ) {
-									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\${hook.type}_${functionName}'${suffix}` );
+									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\\\\\${hook.type}_${functionName}'${suffix}` );
 									completionFunction.documentation = `__NAMESPACE__ . '\\\\${hook.type}_${functionName}'${suffix}\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
 								} else {
 									completionFunction.insertText = new vscode.SnippetString( `'${hook.type}_${functionName}'${suffix}` );
