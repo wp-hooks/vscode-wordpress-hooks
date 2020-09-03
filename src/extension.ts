@@ -333,6 +333,7 @@ export function activate(context: vscode.ExtensionContext): void {
 						)
 						.then(symbols => {
 							if (symbols === undefined) {
+								// @TODO this needs to return a non-positional function
 								return completions;
 							}
 
