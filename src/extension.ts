@@ -341,17 +341,17 @@ export function activate(context: vscode.ExtensionContext): void {
 
 							const context = getContainingSymbol( symbols, position );
 
-							let functionName = hook.name.replace( /[\{\}\$]/g, '' );
+							let functionName = hook.type + '_' + hook.name.replace( /[\{\}\$]/g, '' );
 
 							if ( context.inMethod && context.symbol ) {
 								let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Method);
-								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${hook.type}_${functionName}' ]${suffix}` );
-								completionMethod.documentation = `[ \$this, '${hook.type}_${functionName}' ]${suffix}\n\npublic function ${hook.type}_${functionName}${documentationCallback}`;
+								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${functionName}' ]${suffix}` );
+								completionMethod.documentation = `[ \$this, '${functionName}' ]${suffix}\n\npublic function_${functionName}${documentationCallback}`;
 								completionMethod.preselect = true;
 								completionMethod.sortText = 'a';
 								completionMethod.additionalTextEdits = [];
 
-								const insertMethod = `public function ${hook.type}_${functionName}${documentationCallback}`;
+								const insertMethod = `public function ${functionName}${documentationCallback}`;
 
 								completionMethod.additionalTextEdits.push(
 									vscode.TextEdit.insert( context.symbol.range.end, `\n\n` ),
@@ -369,14 +369,14 @@ export function activate(context: vscode.ExtensionContext): void {
 								completions.push( completionMethod );
 							} else {
 								let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Function);
-								const insertFunction = `function ${hook.type}_${functionName}${documentationCallback}`;
+								const insertFunction = `function ${functionName}${documentationCallback}`;
 
 								if ( context.inNamespace ) {
-									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\\\\\${hook.type}_${functionName}'${suffix}` );
-									completionFunction.documentation = `__NAMESPACE__ . '\\\\${hook.type}_${functionName}'${suffix}\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
+									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\\\\_${functionName}'${suffix}` );
+									completionFunction.documentation = `__NAMESPACE__ . '\\\\${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
 								} else {
-									completionFunction.insertText = new vscode.SnippetString( `'${hook.type}_${functionName}'${suffix}` );
-									completionFunction.documentation = `'${hook.type}_${functionName}'${suffix}\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
+									completionFunction.insertText = new vscode.SnippetString( `'${functionName}'${suffix}` );
+									completionFunction.documentation = `'${functionName}'${suffix}\n\nfunction_${functionName}${documentationCallback}`;
 								}
 
 								completionFunction.preselect = true;
