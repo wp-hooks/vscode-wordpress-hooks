@@ -287,7 +287,7 @@ export function activate(context: vscode.ExtensionContext): void {
 					documentationCallback = '(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n}' + ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 				}
 
-				let docblockClosure = '/**\n *' + docblockLines.join( '\n *' ) + '\n */\n';
+				let docblockCallback = '/**\n *' + docblockLines.join( '\n *' ) + '\n */\n';
 
 				var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Function);
 				completionClosure.insertText = new vscode.SnippetString( `function${snippetCallback}` );
@@ -298,7 +298,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 				if ( docBlocksEnabled ) {
 					completionClosure.additionalTextEdits = [
-						vscode.TextEdit.insert( position.with( { character: 0 } ), docblockClosure ),
+						vscode.TextEdit.insert( position.with( { character: 0 } ), docblockCallback ),
 					];
 				}
 
@@ -341,13 +341,19 @@ export function activate(context: vscode.ExtensionContext): void {
 
 							let functionName = hook.name.replace( /[\{\}\$]/g, '' );
 
-							if ( context.inMethod ) {
+							if ( context.inMethod && context.symbol ) {
 								let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Method);
 								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${hook.type}_${functionName}' ]` );
 								completionMethod.documentation = `[ \$this, '${hook.type}_${functionName}' ]\n\npublic function ${hook.type}_${functionName}${documentationCallback}`;
 								completionMethod.preselect = true;
 								completionMethod.sortText = 'a';
 								completions.push( completionMethod );
+
+								if ( docBlocksEnabled ) {
+									completionMethod.additionalTextEdits = [
+										vscode.TextEdit.insert( context.symbol.range.end, `\n\n${docblockCallback}` ),
+									];
+								}
 							} else {
 								let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Function);
 
@@ -363,10 +369,18 @@ export function activate(context: vscode.ExtensionContext): void {
 								completionFunction.sortText = 'a';
 								completions.push( completionFunction );
 
-								if ( context.inFunction || context.inMethod ) {
-									// @TODO completionFunction.additionalTextEdits needs to be added after current symbol
+								if ( context.symbol ) {
+									if ( docBlocksEnabled ) {
+										completionFunction.additionalTextEdits = [
+											vscode.TextEdit.insert( context.symbol.range.end, `\n\n${docblockCallback}` ),
+										];
+									}
 								} else {
-									// @TODO completionFunction.additionalTextEdits needs to be added after current line
+									if ( docBlocksEnabled ) {
+										completionFunction.additionalTextEdits = [
+											vscode.TextEdit.insert( document.lineAt(position.line).range.end, `\n\n${docblockCallback}` ),
+										];
+									}
 								}
 							}
 
