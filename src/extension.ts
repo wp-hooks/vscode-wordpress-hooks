@@ -349,15 +349,21 @@ export function activate(context: vscode.ExtensionContext): void {
 								completionMethod.sortText = 'a';
 								completionMethod.additionalTextEdits = [];
 
+								const insertMethod = `\n\npublic function ${hook.type}_${functionName}${documentationCallback}`;
+
 								if ( docBlocksEnabled ) {
 									completionMethod.additionalTextEdits.push(
 										vscode.TextEdit.insert( context.symbol.range.end, `\n\n${docblockCallback}` ),
+									);
+									completionMethod.additionalTextEdits.push(
+										vscode.TextEdit.insert( context.symbol.range.end, insertMethod ),
 									);
 								}
 
 								completions.push( completionMethod );
 							} else {
 								let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Function);
+								const insertFunction = `\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
 
 								if ( context.inNamespace ) {
 									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\${hook.type}_${functionName}'` );
@@ -377,12 +383,20 @@ export function activate(context: vscode.ExtensionContext): void {
 											vscode.TextEdit.insert( context.symbol.range.end, `\n\n${docblockCallback}` ),
 										);
 									}
+
+									completionFunction.additionalTextEdits.push(
+										vscode.TextEdit.insert( context.symbol.range.end, insertFunction ),
+									);
 								} else {
 									if ( docBlocksEnabled ) {
 										completionFunction.additionalTextEdits.push(
 											vscode.TextEdit.insert( document.lineAt(position.line).range.end, `\n\n${docblockCallback}` ),
 										);
 									}
+
+									completionFunction.additionalTextEdits.push(
+										vscode.TextEdit.insert( document.lineAt(position.line).range.end, insertFunction ),
+									);
 								}
 
 								completions.push( completionFunction );
