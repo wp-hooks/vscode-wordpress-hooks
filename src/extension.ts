@@ -361,10 +361,11 @@ export function activate(context: vscode.ExtensionContext): void {
 									completionMethod.additionalTextEdits.push(
 										vscode.TextEdit.insert( context.symbol.range.end, `${docblockCallback}` ),
 									);
-									completionMethod.additionalTextEdits.push(
-										vscode.TextEdit.insert( context.symbol.range.end, insertMethod ),
-									);
 								}
+
+								completionMethod.additionalTextEdits.push(
+									vscode.TextEdit.insert( context.symbol.range.end, insertMethod ),
+								);
 
 								completions.push( completionMethod );
 							} else {
@@ -372,11 +373,11 @@ export function activate(context: vscode.ExtensionContext): void {
 								const insertFunction = `function ${functionName}${documentationCallback}`;
 
 								if ( context.inNamespace ) {
-									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\\\\_${functionName}'${suffix}` );
+									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\\\\\${functionName}'${suffix}` );
 									completionFunction.documentation = `__NAMESPACE__ . '\\\\${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
 								} else {
 									completionFunction.insertText = new vscode.SnippetString( `'${functionName}'${suffix}` );
-									completionFunction.documentation = `'${functionName}'${suffix}\n\nfunction_${functionName}${documentationCallback}`;
+									completionFunction.documentation = `'${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
 								}
 
 								completionFunction.preselect = true;
