@@ -151,25 +151,41 @@ function getMinPHPVersion() : number {
 	return parseFloat( typeDeclarationsSupportSetting );
 }
 
-function getContainingSymbol( symbols: vscode.DocumentSymbol[], position: vscode.Position ) : vscode.DocumentSymbol | null {
+interface contextualPosition {
+	symbol: vscode.DocumentSymbol | null; // this can be null if you're at the top level of a non-namespaced file
+	inNamespace: boolean;
+	inMethod: boolean;
+	inFunction: boolean;
+}
+
+function getContainingSymbol( symbols: vscode.DocumentSymbol[], position: vscode.Position ) : contextualPosition {
 	const inside = symbols.filter(symbol => symbol.range.contains(position));
+	const inNamespace = symbols.filter(symbol => ( vscode.SymbolKind.Namespace === symbol.kind )).length > 0;
+
+	let context: contextualPosition = {
+		symbol: null,
+		inNamespace,
+		inMethod: false,
+		inFunction: false,
+	};
 
 	if ( ! inside.length ) {
-		return null;
+		return context;
 	}
 
-	let containing: vscode.DocumentSymbol = inside[0];
+	context.symbol = inside[0];
 
-	inside.forEach(function(symbol){
-		if ( symbol.children.length ) {
-			const insideInside = getContainingSymbol( symbol.children, position );
-			if ( insideInside ) {
-				containing = insideInside;
-			}
+	if ( context.symbol.children.length ) {
+		const methods = context.symbol.children.filter(symbol => symbol.range.contains(position));
+		if ( methods.length ) {
+			context.symbol = methods[0];
 		}
-	});
+	}
 
-	return containing;
+	context.inMethod = ( context.symbol.kind === vscode.SymbolKind.Method );
+	context.inFunction = ( context.symbol.kind === vscode.SymbolKind.Function );
+
+	return context;
 }
 
 export function activate(context: vscode.ExtensionContext): void {
@@ -321,36 +337,40 @@ export function activate(context: vscode.ExtensionContext): void {
 								return completions;
 							}
 
-							// this could be made async
-							const symbol = getContainingSymbol( symbols, position );
+							const context = getContainingSymbol( symbols, position );
 
-							if ( ! symbol ) {
+							if ( ! context ) {
 								return completions;
 							}
 
 							let functionName = hook.name.replace( /[\{\}\$]/g, '' );
 
-							switch ( symbol.kind ) {
+							if ( context.inMethod ) {
+								let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Value);
+								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${hook.type}_${functionName}' ]` );
+								completionMethod.documentation = 'Method callback';
+								completionMethod.preselect = true;
+								completionMethod.sortText = 'a';
+								completions.push( completionMethod );
+							} else {
+								let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Value);
 
-								case vscode.SymbolKind.Method:
-									let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Value);
-									completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${hook.type}_${functionName}' ]` );
-									completionMethod.documentation = 'Method callback';
-									completionMethod.preselect = true;
-									completionMethod.sortText = 'a';
-									completions.push( completionMethod );
-									break;
-
-								// @TODO this needs to trigger when the cursor is not inside anything
-								case vscode.SymbolKind.Function:
-									let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Value);
+								if ( context.inNamespace ) {
+									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\${hook.type}_${functionName}'` );
+								} else {
 									completionFunction.insertText = new vscode.SnippetString( `'${hook.type}_${functionName}'` );
-									completionFunction.documentation = 'Function callback';
-									completionFunction.preselect = true;
-									completionFunction.sortText = 'a';
-									completions.push( completionFunction );
-									break;
+								}
 
+								completionFunction.documentation = 'Function callback';
+								completionFunction.preselect = true;
+								completionFunction.sortText = 'a';
+								completions.push( completionFunction );
+
+								if ( context.inFunction || context.inMethod ) {
+									// @TODO completionFunction.additionalTextEdits needs to be added after current symbol
+								} else {
+									// @TODO completionFunction.additionalTextEdits needs to be added after current line
+								}
 							}
 
 							return completions;
