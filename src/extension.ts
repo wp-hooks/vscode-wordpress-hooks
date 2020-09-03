@@ -351,11 +351,15 @@ export function activate(context: vscode.ExtensionContext): void {
 								completionMethod.sortText = 'a';
 								completionMethod.additionalTextEdits = [];
 
-								const insertMethod = `\n\npublic function ${hook.type}_${functionName}${documentationCallback}`;
+								const insertMethod = `public function ${hook.type}_${functionName}${documentationCallback}`;
+
+								completionMethod.additionalTextEdits.push(
+									vscode.TextEdit.insert( context.symbol.range.end, `\n\n` ),
+								);
 
 								if ( docBlocksEnabled ) {
 									completionMethod.additionalTextEdits.push(
-										vscode.TextEdit.insert( context.symbol.range.end, `\n\n${docblockCallback}` ),
+										vscode.TextEdit.insert( context.symbol.range.end, `${docblockCallback}` ),
 									);
 									completionMethod.additionalTextEdits.push(
 										vscode.TextEdit.insert( context.symbol.range.end, insertMethod ),
@@ -365,7 +369,7 @@ export function activate(context: vscode.ExtensionContext): void {
 								completions.push( completionMethod );
 							} else {
 								let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Function);
-								const insertFunction = `\n\nfunction ${hook.type}_${functionName}${documentationCallback}`;
+								const insertFunction = `function ${hook.type}_${functionName}${documentationCallback}`;
 
 								if ( context.inNamespace ) {
 									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\\\\\${hook.type}_${functionName}'${suffix}` );
@@ -380,9 +384,13 @@ export function activate(context: vscode.ExtensionContext): void {
 								completionFunction.additionalTextEdits = [];
 
 								if ( context.symbol ) {
+									completionFunction.additionalTextEdits.push(
+										vscode.TextEdit.insert( context.symbol.range.end, `\n\n` ),
+									);
+
 									if ( docBlocksEnabled ) {
 										completionFunction.additionalTextEdits.push(
-											vscode.TextEdit.insert( context.symbol.range.end, `\n\n${docblockCallback}` ),
+											vscode.TextEdit.insert( context.symbol.range.end, `${docblockCallback}` ),
 										);
 									}
 
@@ -390,9 +398,13 @@ export function activate(context: vscode.ExtensionContext): void {
 										vscode.TextEdit.insert( context.symbol.range.end, insertFunction ),
 									);
 								} else {
+									completionFunction.additionalTextEdits.push(
+										vscode.TextEdit.insert( document.lineAt(position.line).range.end, `\n\n` ),
+									);
+
 									if ( docBlocksEnabled ) {
 										completionFunction.additionalTextEdits.push(
-											vscode.TextEdit.insert( document.lineAt(position.line).range.end, `\n\n${docblockCallback}` ),
+											vscode.TextEdit.insert( document.lineAt(position.line).range.end, `${docblockCallback}` ),
 										);
 									}
 
