@@ -341,7 +341,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 							const context = getContainingSymbol( symbols, position );
 
-							let functionName = hook.type + '_' + hook.name.replace( /[\{\}\$]/g, '' );
+							let functionName = hook.type + '_' + hook.name.replace( /[^a-z_]/g, '' );
 
 							if ( context.inMethod && context.symbol ) {
 								let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Method);
