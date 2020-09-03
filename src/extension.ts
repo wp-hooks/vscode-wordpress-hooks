@@ -290,7 +290,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 				let docblockClosure = '/**\n *' + docblockLines.join( '\n *' ) + '\n */\n';
 
-				var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Value);
+				var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Function);
 				completionClosure.insertText = new vscode.SnippetString(snippetClosure);
 				completionClosure.documentation = documentationClosure;
 				completionClosure.preselect = true;
@@ -318,7 +318,7 @@ export function activate(context: vscode.ExtensionContext): void {
 					for ( let [ snippet, documentation ] of Object.entries( snippets ) ) {
 						snippet = `'${snippet}' `;
 
-						var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Value );
+						var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Function );
 						completionItem.insertText = new vscode.SnippetString( snippet );
 						completionItem.documentation = snippet;
 
@@ -346,14 +346,14 @@ export function activate(context: vscode.ExtensionContext): void {
 							let functionName = hook.name.replace( /[\{\}\$]/g, '' );
 
 							if ( context.inMethod ) {
-								let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Value);
+								let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Method);
 								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${hook.type}_${functionName}' ]` );
 								completionMethod.documentation = 'Method callback';
 								completionMethod.preselect = true;
 								completionMethod.sortText = 'a';
 								completions.push( completionMethod );
 							} else {
-								let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Value);
+								let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Function);
 
 								if ( context.inNamespace ) {
 									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\${hook.type}_${functionName}'` );
