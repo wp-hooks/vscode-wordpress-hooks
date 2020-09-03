@@ -44,7 +44,7 @@ Yes, open the preferences for VS Code and go to the **Extensions -> Autocomplete
 
 ### Where does the list of hook names come from?
 
-They're generated directly from the WordPress core software and updated in time for each new release. They're bundled with this extension, so there's no requirement for your project to include WordPress, and the extension doesn't scan the files in your project looking for actions and filters.
+They're generated directly from the WordPress core software and updated in time for each new release. They're bundled with this extension so there's no requirement for your project to include WordPress if you don't want to, and the extension doesn't scan the files in your project looking for actions and filters.
 
 ## License
 

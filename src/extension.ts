@@ -152,7 +152,7 @@ function getMinPHPVersion() : number {
 }
 
 interface contextualPosition {
-	symbol: vscode.DocumentSymbol | null; // this can be null if you're at the top level of a non-namespaced file
+	symbol: vscode.DocumentSymbol | null;
 	inNamespace: boolean;
 	inMethod: boolean;
 	inFunction: boolean;
