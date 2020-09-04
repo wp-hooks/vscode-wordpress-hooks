@@ -296,9 +296,9 @@ export function activate(context: vscode.ExtensionContext): void {
 				} );
 
 				const suffix = ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+				let returnTypeString = '';
 
 				if ( 'filter' === hook.type ) {
-					let returnTypeString = '';
 					const returnType = getReturnType( params[0] );
 
 					if ( returnType ) {
@@ -314,8 +314,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 					docblockLines.push( ' * @return ' + ( params[0].types?.join( '|' ) || '' ) + ' ' + params[0].content );
 				} else {
-					let returnTypeString = ( getMinPHPVersion() >= 7.1 )
-						? ' : void' : '';
+					returnTypeString = ( getMinPHPVersion() >= 7.1 ) ? ' : void' : '';
 					snippetCallback = '(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n\t${1}\n}';
 					documentationCallback = '(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n}';
 				}
@@ -340,6 +339,22 @@ export function activate(context: vscode.ExtensionContext): void {
 				completions.push( completionClosure );
 
 				if ( 'filter' === hook.type ) {
+					var completionArrow = new vscode.CompletionItem('Arrow function', vscode.CompletionItemKind.Function);
+
+					const snippetArrow = '( ' + snippetArgsString + ' )' + returnTypeString + ' => \\' + params[0].variable + '${1}';
+					const documentationArrow = '( ' + docArgsString + ' )' + returnTypeString + ' => ' + params[0].variable;
+
+					completionArrow.insertText = new vscode.SnippetString( `fn${snippetArrow}${suffix}` );
+					completionArrow.documentation = `fn${documentationArrow}${suffix}`;
+
+					if ( docBlocksEnabled ) {
+						completionArrow.additionalTextEdits = [
+							vscode.TextEdit.insert( position.with( { character: 0 } ), docblockLines.map( line => `${lineLeadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
+						];
+					}
+
+					completions.push( completionArrow );
+
 					const snippets = {
 						__return_true: 'Return true',
 						__return_false: 'Return false',
