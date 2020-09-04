@@ -329,6 +329,7 @@ export function activate(context: vscode.ExtensionContext): void {
 				completionClosure.insertText = new vscode.SnippetString( `function${snippetCallback}${suffix}` );
 				completionClosure.documentation = `function${documentationCallback}${suffix}`;
 				completionClosure.preselect = true;
+				completionClosure.sortText = '1';
 
 				if ( docBlocksEnabled ) {
 					completionClosure.additionalTextEdits = [
@@ -346,6 +347,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 					completionArrow.insertText = new vscode.SnippetString( `fn${snippetArrow}${suffix}` );
 					completionArrow.documentation = `fn${documentationArrow}${suffix}`;
+					completionArrow.sortText = '2';
 
 					if ( docBlocksEnabled ) {
 						completionArrow.additionalTextEdits = [
@@ -420,6 +422,7 @@ export function activate(context: vscode.ExtensionContext): void {
 						var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Function );
 						completionItem.insertText = new vscode.SnippetString( snippet );
 						completionItem.documentation = snippet;
+						completionItem.sortText = '3';
 
 						completions.push( completionItem );
 					}
@@ -429,7 +432,7 @@ export function activate(context: vscode.ExtensionContext): void {
 					var nullCompletionItem = new vscode.CompletionItem( 'Return null', vscode.CompletionItemKind.Function );
 					nullCompletionItem.insertText = new vscode.SnippetString( snippet );
 					nullCompletionItem.documentation = snippet;
-					nullCompletionItem.sortText = 'z';
+					nullCompletionItem.sortText = '4';
 
 					completions.push( nullCompletionItem );
 				}
@@ -464,7 +467,7 @@ export function activate(context: vscode.ExtensionContext): void {
 								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${functionName}' ]${suffix}` );
 								completionMethod.documentation = `[ \$this, '${functionName}' ]${suffix}\n\npublic function ${functionName}${documentationCallback}`;
 								completionMethod.preselect = true;
-								completionMethod.sortText = 'a';
+								completionMethod.sortText = '0';
 								completionMethod.additionalTextEdits = [];
 
 								let insertMethod = `public function ${functionName}${documentationCallback}`;
@@ -501,7 +504,7 @@ export function activate(context: vscode.ExtensionContext): void {
 								}
 
 								completionFunction.preselect = true;
-								completionFunction.sortText = 'a';
+								completionFunction.sortText = '0';
 								completionFunction.additionalTextEdits = [];
 
 								let insertionPosition: vscode.Position = document.lineAt(position.line).range.end;
