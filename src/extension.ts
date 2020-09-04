@@ -346,7 +346,6 @@ export function activate(context: vscode.ExtensionContext): void {
 						__return_true: 'Return true',
 						__return_false: 'Return false',
 						__return_zero: 'Return zero',
-						__return_null: 'Return null',
 						__return_empty_array: 'Return empty array',
 						__return_empty_string: 'Return empty string'
 					};
@@ -360,6 +359,14 @@ export function activate(context: vscode.ExtensionContext): void {
 
 						completions.push( completionItem );
 					}
+
+					let snippet = `'__return_null' `;
+
+					var nullCompletionItem = new vscode.CompletionItem( 'Return null', vscode.CompletionItemKind.Function );
+					nullCompletionItem.insertText = new vscode.SnippetString( snippet );
+					nullCompletionItem.documentation = snippet;
+
+					completions.push( nullCompletionItem );
 				}
 
 				if (vscode.window.activeTextEditor !== undefined) {
