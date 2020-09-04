@@ -322,14 +322,14 @@ export function activate(context: vscode.ExtensionContext): void {
 
 				docblockLines.push( ' */' );
 
+				const docBlocksEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('docBlocks.enable') ?? true;
+				const lineLeadingMatch = document.lineAt(position).text.match( /^[\s]+/ );
+				const lineLeadingWhitespace = lineLeadingMatch ? lineLeadingMatch[0] : '';
+
 				var completionClosure = new vscode.CompletionItem('Closure', vscode.CompletionItemKind.Function);
 				completionClosure.insertText = new vscode.SnippetString( `function${snippetCallback}${suffix}` );
 				completionClosure.documentation = `function${documentationCallback}${suffix}`;
 				completionClosure.preselect = true;
-
-				const docBlocksEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('docBlocks.enable') ?? true;
-				const lineLeadingMatch = document.lineAt(position).text.match( /^[\s]+/ );
-				const lineLeadingWhitespace = lineLeadingMatch ? lineLeadingMatch[0] : '';
 
 				if ( docBlocksEnabled ) {
 					completionClosure.additionalTextEdits = [
