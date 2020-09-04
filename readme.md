@@ -18,7 +18,7 @@ An autocompleted closure callback looks like this:
 
 [![Screenshot of VS Code showing a completed callback closure for the add_filter function](images/screenshot-3.png?v=0.3.0)](images/screenshot-3.png)
 
-Parameter type declarations, the return type declaration, and the docblock are included where appropriate. The behaviour of these can be adjusted in the settings for the extension.
+Parameter types, the return type, and a docblock are included where appropriate. The behaviour of these can be adjusted in the settings for the extension.
 
 ## FAQ
 
