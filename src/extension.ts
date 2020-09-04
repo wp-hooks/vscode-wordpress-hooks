@@ -276,8 +276,9 @@ export function activate(context: vscode.ExtensionContext): void {
 				let snippetCallback = '';
 				let documentationCallback = '';
 				let docblockLines = [
-					' ' + hook.doc.description,
-					'',
+					'/**',
+					' * ' + hook.doc.description,
+					' *',
 				];
 				let paramTypeLengths: number[] = [ 0 ];
 				let paramNameLengths: number[] = [ 0 ];
@@ -291,7 +292,7 @@ export function activate(context: vscode.ExtensionContext): void {
 				const longestParamName = Math.max( ...paramNameLengths );
 
 				params.forEach( function( param ) {
-					docblockLines.push( ' @param ' + ( param.types?.join( '|' ).padEnd( longestParamType, ' ' ) || '' ) + ' ' + ( param.variable?.padEnd( longestParamName, ' ' ) || '' ) + ' ' + param.content );
+					docblockLines.push( ' * @param ' + ( param.types?.join( '|' ).padEnd( longestParamType, ' ' ) || '' ) + ' ' + ( param.variable?.padEnd( longestParamName, ' ' ) || '' ) + ' ' + param.content );
 				} );
 
 				const suffix = ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
@@ -311,7 +312,7 @@ export function activate(context: vscode.ExtensionContext): void {
 					snippetCallback = '( ' + snippetArgsString + ' )' + returnTypeString + ' {\n\t${1}\n\treturn \\' + params[0].variable + ';\n}';
 					documentationCallback = '( ' + docArgsString + ' )' + returnTypeString + ' {\n\treturn ' + params[0].variable + ';\n}';
 
-					docblockLines.push( ' @return ' + ( params[0].types?.join( '|' ) || '' ) + ' ' + params[0].content );
+					docblockLines.push( ' * @return ' + ( params[0].types?.join( '|' ) || '' ) + ' ' + params[0].content );
 				} else {
 					let returnTypeString = ( getMinPHPVersion() >= 7.1 )
 						? ' : void' : '';
@@ -319,7 +320,7 @@ export function activate(context: vscode.ExtensionContext): void {
 					documentationCallback = '(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n}';
 				}
 
-				let docblockCallback = '/**\n *' + docblockLines.join( '\n *' ) + '\n */\n';
+				docblockLines.push( ' */' );
 
 				var completionClosure = new vscode.CompletionItem('Closure', vscode.CompletionItemKind.Function);
 				completionClosure.insertText = new vscode.SnippetString( `function${snippetCallback}${suffix}` );
@@ -327,10 +328,12 @@ export function activate(context: vscode.ExtensionContext): void {
 				completionClosure.preselect = true;
 
 				const docBlocksEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('docBlocks.enable') ?? true;
+				const lineLeadingMatch = document.lineAt(position).text.match( /^[\s]+/ );
+				const lineLeadingWhitespace = lineLeadingMatch ? lineLeadingMatch[0] : '';
 
 				if ( docBlocksEnabled ) {
 					completionClosure.additionalTextEdits = [
-						vscode.TextEdit.insert( position.with( { character: 0 } ), docblockCallback ),
+						vscode.TextEdit.insert( position.with( { character: 0 } ), docblockLines.map( line => `${lineLeadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
 					];
 				}
 
