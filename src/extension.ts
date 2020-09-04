@@ -365,6 +365,7 @@ export function activate(context: vscode.ExtensionContext): void {
 					var nullCompletionItem = new vscode.CompletionItem( 'Return null', vscode.CompletionItemKind.Function );
 					nullCompletionItem.insertText = new vscode.SnippetString( snippet );
 					nullCompletionItem.documentation = snippet;
+					nullCompletionItem.sortText = 'z';
 
 					completions.push( nullCompletionItem );
 				}
