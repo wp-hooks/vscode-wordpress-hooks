@@ -7,7 +7,12 @@ import * as meta from '../package.json';
 function get_hook_completion( hook: Hook ): vscode.CompletionItem {
 	var completion = new vscode.CompletionItem(hook.name, vscode.CompletionItemKind.Value);
 	completion.detail = hook.doc.description;
+	completion.documentation = get_hook_description( hook );
 
+	return completion;
+}
+
+function get_hook_description( hook: Hook ): vscode.MarkdownString {
 	var description = hook.doc.long_description;
 
 	description += "\n\n";
@@ -32,9 +37,7 @@ function get_hook_completion( hook: Hook ): vscode.CompletionItem {
 		description += '_@' + tag.name + '_' + " " + ( tag.content || "" ) + " " + ( tag.description || "" );
 	});
 
-	completion.documentation = new vscode.MarkdownString( description );
-
-	return completion;
+	return new vscode.MarkdownString( description );
 }
 
 function isInFilter(line: string): RegExpMatchArray | null {
