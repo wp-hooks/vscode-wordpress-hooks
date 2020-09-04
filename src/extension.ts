@@ -326,7 +326,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 				let docblockCallback = '/**\n *' + docblockLines.join( '\n *' ) + '\n */\n';
 
-				var completionClosure = new vscode.CompletionItem('Closure callback', vscode.CompletionItemKind.Function);
+				var completionClosure = new vscode.CompletionItem('Closure', vscode.CompletionItemKind.Function);
 				completionClosure.insertText = new vscode.SnippetString( `function${snippetCallback}${suffix}` );
 				completionClosure.documentation = `function${documentationCallback}${suffix}`;
 				completionClosure.preselect = true;
@@ -379,7 +379,7 @@ export function activate(context: vscode.ExtensionContext): void {
 							let functionName = hook.type + '_' + hook.name.replace( /[^a-z_]/g, '' );
 
 							if ( context.inMethod && context.symbol ) {
-								let completionMethod = new vscode.CompletionItem('Method callback', vscode.CompletionItemKind.Method);
+								let completionMethod = new vscode.CompletionItem('Class method', vscode.CompletionItemKind.Method);
 								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${functionName}' ]${suffix}` );
 								completionMethod.documentation = `[ \$this, '${functionName}' ]${suffix}\n\npublic function ${functionName}${documentationCallback}`;
 								completionMethod.preselect = true;
@@ -404,7 +404,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 								completions.push( completionMethod );
 							} else {
-								let completionFunction = new vscode.CompletionItem('Function callback', vscode.CompletionItemKind.Function);
+								let completionFunction = new vscode.CompletionItem('Function', vscode.CompletionItemKind.Function);
 								const insertFunction = `function ${functionName}${documentationCallback}`;
 
 								if ( context.inNamespace ) {
