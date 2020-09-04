@@ -10,7 +10,7 @@ Start typing the name of a WordPress action or filter within `add_action()` or `
 
 [![Screenshot of VS Code showing an autocomplete list for the first parameter of the add_filter function](images/screenshot-1.png?v=0.3.0)](images/screenshot-1.png)
 
-Autocomplete is also provided for the callback function. It's contextually aware and provides options for a function, a class method, a closure, and WordPress' built-in utility functions:
+Autocomplete is also provided for the callback function. It's contextually aware and provides options for a function, a class method, a closure, an arrow function, and WordPress' built-in utility functions:
 
 [![Screenshot of VS Code showing an autocomplete list for the callback parameter of the add_filter function](images/screenshot-2.png?v=0.3.0)](images/screenshot-2.png)
 
