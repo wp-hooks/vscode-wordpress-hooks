@@ -61,7 +61,12 @@ function getHook( name: string ): Hook | void {
 	}
 }
 
-function getTagType( tag: Tag ): string | null {
+interface tagType {
+	type: string;
+	nullable: boolean;
+}
+
+function getTagType( tag: Tag ): tagType | null {
 	const typeDeclarationsSupport = getMinPHPVersion();
 
 	// https://www.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration
@@ -77,6 +82,11 @@ function getTagType( tag: Tag ): string | null {
 		'object' :   7.2,
 	};
 
+	let tagType: tagType = {
+		type: '',
+		nullable: false,
+	};
+
 	// Type declarations disabled? Bail.
 	if ( ! typeDeclarationsSupport ) {
 		return null;
@@ -87,15 +97,28 @@ function getTagType( tag: Tag ): string | null {
 		return null;
 	}
 
+	let types = [ ...tag.types ];
+
+	// Handle nullable type.
+	if ( types.length === 2 && typeDeclarationsSupport >= 7.1 ) {
+		if ( types[0] === 'null' ) {
+			types.splice( 0, 1 );
+			tagType.nullable = true;
+		} else if ( types[1] === 'null' ) {
+			types.splice( 1, 1 );
+			tagType.nullable = true;
+		}
+	}
+
 	// More than one type? Bail.
-	if ( tag.types.length !== 1 ) {
+	if ( types.length !== 1 ) {
 		return null;
 	}
 
-	let type = tag.types[0];
+	let type = types[0];
 
 	// Un-hintable type? Bail.
-	if ( [ 'null', 'mixed' ].includes( type ) ) {
+	if ( [ 'mixed' ].includes( type ) ) {
 		return null;
 	}
 
@@ -124,10 +147,12 @@ function getTagType( tag: Tag ): string | null {
 		return null;
 	}
 
-	return type;
+	tagType.type = type;
+
+	return tagType;
 }
 
-function getReturnType( tag: Tag ) : string | null {
+function getReturnType( tag: Tag ) : tagType | null {
 	// Return type declarations require PHP 7 or higher.
 	if ( getMinPHPVersion() < 7 ) {
 		return null;
@@ -236,7 +261,15 @@ export function activate(context: vscode.ExtensionContext): void {
 					let val = `\\${param.variable}`;
 					let type = getTagType( param );
 
-					return type ? ( type + ' ' + val ) : val;
+					if ( ! type ) {
+						return val;
+					}
+
+					if ( ! type.nullable ) {
+						return `${type.type} ${val}`;
+					}
+
+					return `\?${type.type} ${val}`;
 				} ).join( ', ' );
 				const docArgsString = snippetArgsString.replace( /\\\$/g, '$' );
 
@@ -269,13 +302,15 @@ export function activate(context: vscode.ExtensionContext): void {
 				const suffix = ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
 
 				if ( 'filter' === hook.type ) {
-					let returnType = null;
 					let returnTypeString = '';
-
-					returnType = getReturnType( params[0] );
+					const returnType = getReturnType( params[0] );
 
 					if ( returnType ) {
-						returnTypeString = ' : ' + returnType;
+						if ( returnType.nullable ) {
+							returnTypeString = ` : \?${returnType.type}`;
+						} else {
+							returnTypeString = ` : ${returnType.type}`;
+						}
 					}
 
 					snippetCallback = '( ' + snippetArgsString + ' )' + returnTypeString + ' {\n\t${1}\n\treturn \\' + params[0].variable + ';\n}';
