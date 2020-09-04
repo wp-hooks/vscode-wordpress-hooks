@@ -434,6 +434,15 @@ export function activate(context: vscode.ExtensionContext): void {
 							const context = getContainingSymbol( symbols, position );
 
 							let functionName = hook.type + '_' + hook.name.replace( /[^a-z_]/g, '' );
+							let leadingMatch = null;
+
+							if ( context.symbol ) {
+								leadingMatch = document.lineAt(context.symbol.range.end).text.match( /^[\s]+/ );
+							} else {
+								leadingMatch = document.lineAt(position).text.match( /^[\s]+/ );
+							}
+
+							const leadingWhitespace = leadingMatch ? leadingMatch[0] : '';
 
 							if ( context.inMethod && context.symbol ) {
 								let completionMethod = new vscode.CompletionItem('Class method', vscode.CompletionItemKind.Method);
@@ -443,7 +452,9 @@ export function activate(context: vscode.ExtensionContext): void {
 								completionMethod.sortText = 'a';
 								completionMethod.additionalTextEdits = [];
 
-								const insertMethod = `public function ${functionName}${documentationCallback}`;
+								let insertMethod = `public function ${functionName}${documentationCallback}`;
+
+								insertMethod = insertMethod.split( '\n' ).map( line => `${leadingWhitespace}${line}` ).join( '\n' );
 
 								completionMethod.additionalTextEdits.push(
 									vscode.TextEdit.insert( context.symbol.range.end, `\n\n` ),
@@ -451,7 +462,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 								if ( docBlocksEnabled ) {
 									completionMethod.additionalTextEdits.push(
-										vscode.TextEdit.insert( context.symbol.range.end, `${docblockCallback}` ),
+										vscode.TextEdit.insert( context.symbol.range.end, docblockLines.map( line => `${leadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
 									);
 								}
 
@@ -462,7 +473,9 @@ export function activate(context: vscode.ExtensionContext): void {
 								completions.push( completionMethod );
 							} else {
 								let completionFunction = new vscode.CompletionItem('Function', vscode.CompletionItemKind.Function);
-								const insertFunction = `function ${functionName}${documentationCallback}`;
+								let insertFunction = `function ${functionName}${documentationCallback}`;
+
+								insertFunction = insertFunction.split( '\n' ).map( line => `${leadingWhitespace}${line}` ).join( '\n' );
 
 								if ( context.inNamespace ) {
 									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\\\\\${functionName}'${suffix}` );
@@ -488,7 +501,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 								if ( docBlocksEnabled ) {
 									completionFunction.additionalTextEdits.push(
-										vscode.TextEdit.insert( insertionPosition, docblockCallback ),
+										vscode.TextEdit.insert( insertionPosition, docblockLines.map( line => `${leadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
 									);
 								}
 
