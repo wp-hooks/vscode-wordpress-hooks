@@ -49,7 +49,7 @@
 					},
 					"vscode-wordpress-hooks.typeDeclarations.olderPhpVersionSupport": {
 						"type": "string",
-						"description": "PHP 7.2 or higher is required to support the full set of type declaration features. If you need to support an older PHP version, select it here and only the types available in that version of PHP will be used",
+						"description": "PHP 7.2 or higher is required to support the full set of type declaration features. If you need to support an older version of PHP, select it here and only the types available in that version of PHP will be used",
 						"default": "None",
 						"enum": [
 							"None",
