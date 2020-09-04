@@ -349,8 +349,59 @@ export function activate(context: vscode.ExtensionContext): void {
 						__return_empty_array: 'Return empty array',
 						__return_empty_string: 'Return empty string'
 					};
+					const snippetTypes: { [key: string]: string[] } = {
+						'null': [
+						],
+						'self': [
+						],
+						'array': [
+							'__return_empty_array',
+						],
+						'callable': [
+						],
+						'bool': [
+							'__return_true',
+							'__return_false',
+						],
+						'float': [
+							'__return_zero',
+						],
+						'int': [
+							'__return_zero',
+						],
+						'string': [
+							'__return_empty_string',
+						],
+						'iterable': [
+							'__return_empty_array',
+						],
+						'object': [
+						],
+					};
 
 					for ( let [ snippet, documentation ] of Object.entries( snippets ) ) {
+						// If we don't know the types, show this snippet:
+						let show = ! params[0].types;
+
+						if ( params[0].types ) {
+							for ( let paramType of params[0].types ) {
+								// If there's a parameter type which we're not aware of, show this snippet:
+								if ( ! ( paramType in snippetTypes ) ) {
+									show = true;
+									break;
+								}
+
+								// If this parameter type supports this snippet, show it:
+								if ( snippetTypes[ paramType ].includes( snippet ) ) {
+									show = true;
+								}
+							}
+						}
+
+						if ( ! show ) {
+							continue;
+						}
+
 						snippet = `'${snippet}' `;
 
 						var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Function );
