@@ -279,21 +279,16 @@ export function activate(context: vscode.ExtensionContext): void {
 					' ' + hook.doc.description,
 					'',
 				];
-				let longestParamType = 0;
-				let longestParamName = 0;
+				let paramTypeLengths: number[] = [ 0 ];
+				let paramNameLengths: number[] = [ 0 ];
 
 				params.forEach( function( param ) {
-					const paramTypeLength = param.types?.join( '|' ).length || 0;
-					const paramNameLength = param.variable?.length || 0;
-
-					if ( paramTypeLength > longestParamType ) {
-						longestParamType = paramTypeLength;
-					}
-
-					if ( paramNameLength > longestParamName ) {
-						longestParamName = paramNameLength;
-					}
+					param.types && paramTypeLengths.push( param.types.join( '|' ).length );
+					param.variable && paramNameLengths.push( param.variable.length );
 				} );
+
+				const longestParamType = Math.max( ...paramTypeLengths );
+				const longestParamName = Math.max( ...paramNameLengths );
 
 				params.forEach( function( param ) {
 					docblockLines.push( ' @param ' + ( param.types?.join( '|' ).padEnd( longestParamType, ' ' ) || '' ) + ' ' + ( param.variable?.padEnd( longestParamName, ' ' ) || '' ) + ' ' + param.content );
