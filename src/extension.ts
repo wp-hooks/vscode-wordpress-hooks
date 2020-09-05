@@ -550,5 +550,29 @@ export function activate(context: vscode.ExtensionContext): void {
 		' '
 	);
 
-	context.subscriptions.push(hooksProvider,callbackProvider);
+	const hoverProvider = vscode.languages.registerHoverProvider(
+		'php',
+		{
+			provideHover(document, position, token) {
+				const linePrefix = document.lineAt(position).text.substr(0, position.character);
+
+				if ( ! isInAction( linePrefix ) && ! isInFilter( linePrefix ) ) {
+					return undefined;
+				}
+
+				const hook = getHook( document.getText( document.getWordRangeAtPosition( position ) ) );
+
+				if ( ! hook ) {
+					return undefined;
+				}
+
+				return new vscode.Hover( [
+					new vscode.MarkdownString( hook.doc.description ),
+					get_hook_description( hook ),
+				] );
+			}
+		}
+	);
+
+	context.subscriptions.push(hooksProvider,callbackProvider,hoverProvider);
 }
