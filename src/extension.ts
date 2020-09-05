@@ -14,8 +14,9 @@ function get_hook_completion( hook: Hook ): vscode.CompletionItem {
 
 function get_hook_description( hook: Hook ): vscode.MarkdownString {
 	var description = hook.doc.long_description;
+	const slug = get_hook_slug( hook );
 
-	description += "\n\n";
+	description += `\n\n[View on developer.wordpress.org →](https://developer.wordpress.org/reference/hooks/${slug}/)\n\n`;
 
 	const params = hook.doc.tags.filter( tag => 'param' === tag.name );
 
@@ -38,6 +39,10 @@ function get_hook_description( hook: Hook ): vscode.MarkdownString {
 	});
 
 	return new vscode.MarkdownString( description );
+}
+
+function get_hook_slug( hook: Hook ): string {
+	return hook.name.toLowerCase().replace( /[^a-z_-]/g, '' );
 }
 
 function isInFilter(line: string): RegExpMatchArray | null {
