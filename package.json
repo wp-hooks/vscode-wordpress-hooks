@@ -70,6 +70,7 @@
 	"icon": "images/icon.png",
 	"main": "./out/extension.js",
 	"scripts": {
+		"lint": "eslint -c .eslintrc.json --ext .ts src",
 		"deploy": "vsce publish",
 		"vscode:prepublish": "webpack --mode production",
 		"webpack": "webpack --mode development",
@@ -79,8 +80,12 @@
 	"devDependencies": {
 		"@types/node": "^10.17.0",
 		"@types/vscode": "^1.32.0",
+		"@typescript-eslint/eslint-plugin": "^4.0.1",
+		"@typescript-eslint/parser": "^4.0.1",
+		"eslint": "^7.8.1",
+		"eslint-config-airbnb-base": "^14.2.0",
+		"eslint-plugin-import": "^2.22.0",
 		"ts-loader": "^8.0.0",
-		"tslint": "^5.16.0",
 		"typescript": "^3.9",
 		"vsce": "^1.77.0",
 		"webpack": "^4.43.0",
