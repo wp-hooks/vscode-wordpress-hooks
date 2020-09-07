@@ -4,24 +4,28 @@ import filters from '@johnbillion/wp-hooks/hooks/filters.json';
 import { Hook, Tag } from '@johnbillion/wp-hooks/interface';
 import * as meta from '../package.json';
 
-function get_hook_completion( hook: Hook ): vscode.CompletionItem {
-	var completion = new vscode.CompletionItem(hook.name, vscode.CompletionItemKind.Value);
+function getHookCompletion(
+	hook: Hook,
+): vscode.CompletionItem {
+	const completion = new vscode.CompletionItem(hook.name, vscode.CompletionItemKind.Value);
 	completion.detail = hook.doc.description;
-	completion.documentation = get_hook_description( hook );
+	completion.documentation = getHookDescription(hook);
 
 	return completion;
 }
 
-function get_hook_description( hook: Hook ): vscode.MarkdownString {
-	var description = hook.doc.long_description;
-	const slug = get_hook_slug( hook );
+function getHookDescription(
+	hook: Hook,
+): vscode.MarkdownString {
+	let description = hook.doc.long_description;
+	const slug = getHookSlug(hook);
 
 	description += `\n\n[View on developer.wordpress.org →](https://developer.wordpress.org/reference/hooks/${slug}/)\n\n`;
 
-	const params = hook.doc.tags.filter( tag => 'param' === tag.name );
+	const params = hook.doc.tags.filter((tag) => tag.name === 'param');
 
-	params.forEach(function( tag: Tag ){
-		if ( ! tag.types ) {
+	params.forEach((tag: Tag) => {
+		if (!tag.types) {
 			return;
 		}
 
@@ -31,40 +35,50 @@ function get_hook_description( hook: Hook ): vscode.MarkdownString {
 		description += tag.content;
 	});
 
-	const everything_else = hook.doc.tags.filter( tag => 'param' !== tag.name );
+	const everythingElse = hook.doc.tags.filter((tag) => tag.name !== 'param');
 
 	everything_else.forEach(function( tag: Tag ){
 		description += "\n\n";
 		description += '_@' + tag.name + '_' + " " + ( tag.content || "" ) + " " + ( tag.description || "" );
 	});
 
-	return new vscode.MarkdownString( description );
+	return new vscode.MarkdownString(description);
 }
 
-function get_hook_slug( hook: Hook ): string {
-	return hook.name.toLowerCase().replace( /[^a-z_-]/g, '' );
+function getHookSlug(
+	hook: Hook,
+): string {
+	return hook.name.toLowerCase().replace(/[^a-z_-]/g, '');
 }
 
-function isInFilter(line: string): RegExpMatchArray | null {
-	return line.match( /(add|remove|has|doing)_filter\([\s]*('|")[^"|']*$/ );
+function isInFilter(
+	line: string,
+): RegExpMatchArray | null {
+	return line.match(/(add|remove|has|doing)_filter\([\s]*('|")[^"|']*$/);
 }
 
-function isInAction(line: string): RegExpMatchArray | null {
-	return line.match( /(add|remove|has|doing|did)_action\([\s]*('|")[^"|']*$/ );
+function isInAction(
+	line: string,
+): RegExpMatchArray | null {
+	return line.match(/(add|remove|has|doing|did)_action\([\s]*('|")[^"|']*$/);
 }
 
-function isInFunctionDeclaration(line: string): RegExpMatchArray | null {
-	return line.match( /add_(filter|action)\([\s]*['|"]([\S]+?)['|"],[\s]*[\w]*?$/ );
+function isInFunctionDeclaration(
+	line: string,
+): RegExpMatchArray | null {
+	return line.match(/add_(filter|action)\([\s]*['|"]([\S]+?)['|"],[\s]*[\w]*?$/);
 }
 
-function getHook( name: string ): Hook | void {
-	var hooks = filters.filter( filter => filter.name === name );
+function getHook(
+	name: string,
+): Hook | void {
+	let hooks = filters.filter((filter) => filter.name === name);
 
-	if ( hooks.length == 0 ) {
-		hooks = actions.filter( action => action.name === name );
+	if (hooks.length === 0) {
+		hooks = actions.filter((action) => action.name === name);
 	}
 
-	if ( hooks.length ) {
+	if (hooks.length) {
 		return hooks[0];
 	}
 }
@@ -74,84 +88,86 @@ interface tagType {
 	nullable: boolean;
 }
 
-function getTagType( tag: Tag ): tagType | null {
+function getTagType(
+	tag: Tag,
+): tagType | null {
 	const typeDeclarationsSupport = getMinPHPVersion();
 
 	// https://www.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration
 	const allowedTypes: { [key: string]: number } = {
-		'self' :     5.0,
-		'array' :    5.1,
-		'callable' : 5.4,
-		'bool' :     7.0,
-		'float' :    7.0,
-		'int' :      7.0,
-		'string' :   7.0,
-		'iterable' : 7.1,
-		'object' :   7.2,
+		self: 5.0,
+		array: 5.1,
+		callable: 5.4,
+		bool: 7.0,
+		float: 7.0,
+		int: 7.0,
+		string: 7.0,
+		iterable: 7.1,
+		object: 7.2,
 	};
 
-	let tagType: tagType = {
+	const tagType: tagType = {
 		type: '',
 		nullable: false,
 	};
 
 	// Type declarations disabled? Bail.
-	if ( ! typeDeclarationsSupport ) {
+	if (!typeDeclarationsSupport) {
 		return null;
 	}
 
 	// No type info? Bail.
-	if ( ! tag.types ) {
+	if (!tag.types) {
 		return null;
 	}
 
-	let types = [ ...tag.types ];
+	const types = [...tag.types];
 
 	// Handle nullable type.
-	if ( types.length === 2 && typeDeclarationsSupport >= 7.1 ) {
-		if ( types[0] === 'null' ) {
-			types.splice( 0, 1 );
+	if (types.length === 2 && typeDeclarationsSupport >= 7.1) {
+		if (types[0] === 'null') {
+			types.splice(0, 1);
 			tagType.nullable = true;
-		} else if ( types[1] === 'null' ) {
-			types.splice( 1, 1 );
+		} else if (types[1] === 'null') {
+			types.splice(1, 1);
 			tagType.nullable = true;
 		}
 	}
 
 	// More than one type? Bail.
-	if ( types.length !== 1 ) {
+	if (types.length !== 1) {
 		return null;
 	}
 
 	let type = types[0];
 
 	// Un-hintable type? Bail.
-	if ( [ 'mixed' ].includes( type ) ) {
+	if (['mixed'].includes(type)) {
 		return null;
 	}
 
 	// Hinting for typed-arrays.
-	if ( type.indexOf( '[]' ) !== -1 ) {
+	if (type.indexOf('[]') !== -1) {
 		type = 'array';
 	}
 
 	// Aliases for bool.
-	if ( [ 'false', 'true', 'boolean' ].includes( type ) ) {
+	if (['false', 'true', 'boolean'].includes(type)) {
 		type = 'bool';
 	}
 
 	// Alias for callable.
-	if ( type === 'callback' ) {
+	if (type === 'callback') {
 		type = 'callable';
 	}
 
 	// Alias for int.
-	if ( type === 'integer' ) {
+	if (type === 'integer') {
 		type = 'int';
 	}
 
 	// Check the allowed types, ignoring unknown types such as class and interface names.
-	if ( allowedTypes[ type ] && ( allowedTypes[ type ] > typeDeclarationsSupport ) ) {
+	if (allowedTypes[type] && (allowedTypes[type] > typeDeclarationsSupport)) {
 		return null;
 	}
 
@@ -160,28 +176,30 @@ function getTagType( tag: Tag ): tagType | null {
 	return tagType;
 }
 
-function getReturnType( tag: Tag ) : tagType | null {
+function getReturnType(
+	tag: Tag,
+) : tagType | null {
 	// Return type declarations require PHP 7 or higher.
-	if ( getMinPHPVersion() < 7 ) {
+	if (getMinPHPVersion() < 7) {
 		return null;
 	}
 
-	return getTagType( tag );
+	return getTagType(tag);
 }
 
 function getMinPHPVersion() : number {
-	const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.enable') ?? true;
-	let typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration( meta.name ).get('typeDeclarations.olderPhpVersionSupport') ?? '';
+	const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration(meta.name).get('typeDeclarations.enable') ?? true;
+	const typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration(meta.name).get('typeDeclarations.olderPhpVersionSupport') ?? '';
 
-	if ( ! typeDeclarationsEnabled ) {
+	if (!typeDeclarationsEnabled) {
 		return 0;
 	}
 
-	if ( ! typeDeclarationsSupportSetting || 'None' === typeDeclarationsSupportSetting ) {
+	if (!typeDeclarationsSupportSetting || typeDeclarationsSupportSetting === 'None') {
 		return 999;
 	}
 
-	return parseFloat( typeDeclarationsSupportSetting );
+	return parseFloat(typeDeclarationsSupportSetting);
 }
 
 interface contextualPosition {
@@ -191,57 +209,62 @@ interface contextualPosition {
 	inFunction: boolean;
 }
 
-function getContainingSymbol( symbols: vscode.DocumentSymbol[], position: vscode.Position ) : contextualPosition {
-	const inside = symbols.filter(symbol => symbol.range.contains(position));
-	const inNamespace = symbols.filter(symbol => ( vscode.SymbolKind.Namespace === symbol.kind )).length > 0;
+function getContainingSymbol(
+	symbols: vscode.DocumentSymbol[],
+	position: vscode.Position,
+) : contextualPosition {
+	const inside = symbols.filter((symbol) => symbol.range.contains(position));
+	const inNamespace = symbols.filter((symbol) => (vscode.SymbolKind.Namespace === symbol.kind)).length > 0;
 
-	let context: contextualPosition = {
+	const context: contextualPosition = {
 		symbol: null,
 		inNamespace,
 		inMethod: false,
 		inFunction: false,
 	};
 
-	if ( ! inside.length ) {
+	if (!inside.length) {
 		return context;
 	}
 
-	context.symbol = inside[0];
+	[context.symbol] = inside;
 
-	if ( context.symbol.children.length ) {
-		const methods = context.symbol.children.filter(symbol => symbol.range.contains(position));
-		if ( methods.length ) {
-			context.symbol = methods[0];
+	if (context.symbol.children.length) {
+		const methods = context.symbol.children.filter((symbol) => symbol.range.contains(position));
+		if (methods.length) {
+			[context.symbol] = methods;
 		}
 	}
 
-	context.inMethod = ( context.symbol.kind === vscode.SymbolKind.Method );
-	context.inFunction = ( context.symbol.kind === vscode.SymbolKind.Function );
+	context.inMethod = (context.symbol.kind === vscode.SymbolKind.Method);
+	context.inFunction = (context.symbol.kind === vscode.SymbolKind.Function);
 
 	return context;
 }
 
-export function activate(context: vscode.ExtensionContext): void {
+export function activate(
+	context: vscode.ExtensionContext,
+): void {
 	const hooksProvider = vscode.languages.registerCompletionItemProvider(
 		'php',
 		{
 			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
 				// get all text until the `position` and check if it reads a certain value and if so then complete
-				let linePrefix = document.lineAt(position).text.substr(0, position.character);
+				const linePrefix = document.lineAt(position).text.substr(0, position.character);
 
-				if ( isInAction( linePrefix ) ) {
-					return actions.map(get_hook_completion);
+				if (isInAction(linePrefix)) {
+					return actions.map(getHookCompletion);
 				}
 
-				if ( isInFilter( linePrefix ) ) {
-					return filters.map(get_hook_completion);
+				if (isInFilter(linePrefix)) {
+					return filters.map(getHookCompletion);
 				}
 
 				return undefined;
-			}
+			},
 		},
 		"'",
-		'"'
+		'"',
 	);
 
 	const callbackProvider = vscode.languages.registerCompletionItemProvider(
@@ -249,68 +272,68 @@ export function activate(context: vscode.ExtensionContext): void {
 		{
 			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
 				// get all text until the `position` and check if it reads a certain value and if so then complete
-				let linePrefix  = document.lineAt(position).text.substr(0, position.character);
-				let declaration = isInFunctionDeclaration( linePrefix );
+				const linePrefix = document.lineAt(position).text.substr(0, position.character);
+				const declaration = isInFunctionDeclaration(linePrefix);
 
-				if ( ! declaration ) {
+				if (!declaration) {
 					return undefined;
 				}
 
-				const hook = getHook( declaration[2] );
+				const hook = getHook(declaration[2]);
 
-				if ( ! hook ) {
+				if (!hook) {
 					return undefined;
 				}
 
-				let completions: vscode.CompletionItem[] = [];
+				const completions: vscode.CompletionItem[] = [];
 
-				const params            = hook.doc.tags.filter( tag => 'param' === tag.name );
-				const snippetArgsString = params.map( function( param ) {
-					let val = `\\${param.variable}`;
-					let type = getTagType( param );
+				const params = hook.doc.tags.filter((tag) => tag.name === 'param');
+				const snippetArgsString = params.map((param) => {
+					const val = `\\${param.variable}`;
+					const type = getTagType(param);
 
-					if ( ! type ) {
+					if (!type) {
 						return val;
 					}
 
-					if ( ! type.nullable ) {
+					if (!type.nullable) {
 						return `${type.type} ${val}`;
 					}
 
 					return `\?${type.type} ${val}`;
-				} ).join( ', ' );
-				const docArgsString = snippetArgsString.replace( /\\\$/g, '$' );
+				}).join(', ');
+				const docArgsString = snippetArgsString.replace(/\\\$/g, '$');
 
 				let snippetCallback = '';
 				let documentationCallback = '';
-				let docblockLines = [
+				const docblockLines = [
 					'/**',
-					' * ' + hook.doc.description,
+					` * ${hook.doc.description}`,
 					' *',
 				];
-				let paramTypeLengths: number[] = [ 0 ];
-				let paramNameLengths: number[] = [ 0 ];
+				const paramTypeLengths: number[] = [0];
+				const paramNameLengths: number[] = [0];
 
-				params.forEach( function( param ) {
-					param.types && paramTypeLengths.push( param.types.join( '|' ).length );
-					param.variable && paramNameLengths.push( param.variable.length );
-				} );
+				params.forEach((param) => {
+					param.types && paramTypeLengths.push(param.types.join('|').length);
+					param.variable && paramNameLengths.push(param.variable.length);
+				});
 
-				const longestParamType = Math.max( ...paramTypeLengths );
-				const longestParamName = Math.max( ...paramNameLengths );
+				const longestParamType = Math.max(...paramTypeLengths);
+				const longestParamName = Math.max(...paramNameLengths);
 
 				params.forEach( function( param ) {
 					docblockLines.push( ' * @param ' + ( param.types?.join( '|' ).padEnd( longestParamType, ' ' ) || '' ) + ' ' + ( param.variable?.padEnd( longestParamName, ' ' ) || '' ) + ' ' + param.content );
 				} );
 
-				const suffix = ( params.length > 1 ? ', 10, ' + params.length + ' ' : ' ' );
+				const suffix = (params.length > 1 ? `, 10, ${params.length} ` : ' ');
 				let returnTypeString = '';
 
-				if ( 'filter' === hook.type ) {
-					const returnType = getReturnType( params[0] );
+				if (hook.type === 'filter') {
+					const returnType = getReturnType(params[0]);
 
-					if ( returnType ) {
-						if ( returnType.nullable ) {
+					if (returnType) {
+						if (returnType.nullable) {
 							returnTypeString = ` : \?${returnType.type}`;
 						} else {
 							returnTypeString = ` : ${returnType.type}`;
@@ -327,152 +350,152 @@ export function activate(context: vscode.ExtensionContext): void {
 					documentationCallback = '(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n}';
 				}
 
-				docblockLines.push( ' */' );
+				docblockLines.push(' */');
 
-				const docBlocksEnabled: boolean = vscode.workspace.getConfiguration( meta.name ).get('docBlocks.enable') ?? true;
-				const lineLeadingMatch = document.lineAt(position).text.match( /^[\s]+/ );
+				const docBlocksEnabled: boolean = vscode.workspace.getConfiguration(meta.name).get('docBlocks.enable') ?? true;
+				const lineLeadingMatch = document.lineAt(position).text.match(/^[\s]+/);
 				const lineLeadingWhitespace = lineLeadingMatch ? lineLeadingMatch[0] : '';
 
-				var completionClosure = new vscode.CompletionItem('Closure', vscode.CompletionItemKind.Function);
-				completionClosure.insertText = new vscode.SnippetString( `function${snippetCallback}${suffix}` );
+				const completionClosure = new vscode.CompletionItem('Closure', vscode.CompletionItemKind.Function);
+				completionClosure.insertText = new vscode.SnippetString(`function${snippetCallback}${suffix}`);
 				completionClosure.documentation = `function${documentationCallback}${suffix}`;
 				completionClosure.preselect = true;
 				completionClosure.sortText = '1';
 
-				if ( docBlocksEnabled ) {
+				if (docBlocksEnabled) {
 					completionClosure.additionalTextEdits = [
 						vscode.TextEdit.insert( position.with( { character: 0 } ), docblockLines.map( line => `${lineLeadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
 					];
 				}
 
-				completions.push( completionClosure );
+				completions.push(completionClosure);
 
-				if ( 'filter' === hook.type ) {
-					var completionArrow = new vscode.CompletionItem('Arrow function', vscode.CompletionItemKind.Function);
+				if (hook.type === 'filter') {
+					const completionArrow = new vscode.CompletionItem('Arrow function', vscode.CompletionItemKind.Function);
 
 					const snippetArrow = '( ' + snippetArgsString + ' )' + returnTypeString + ' => \\' + params[0].variable + '${1}';
 					const documentationArrow = '( ' + docArgsString + ' )' + returnTypeString + ' => ' + params[0].variable;
 
-					completionArrow.insertText = new vscode.SnippetString( `fn${snippetArrow}${suffix}` );
+					completionArrow.insertText = new vscode.SnippetString(`fn${snippetArrow}${suffix}`);
 					completionArrow.documentation = `fn${documentationArrow}${suffix}`;
 					completionArrow.sortText = '2';
 
-					if ( docBlocksEnabled ) {
+					if (docBlocksEnabled) {
 						completionArrow.additionalTextEdits = [
 							vscode.TextEdit.insert( position.with( { character: 0 } ), docblockLines.map( line => `${lineLeadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
 						];
 					}
 
-					completions.push( completionArrow );
+					completions.push(completionArrow);
 
 					const snippets = {
 						__return_true: 'Return true',
 						__return_false: 'Return false',
 						__return_zero: 'Return zero',
 						__return_empty_array: 'Return empty array',
-						__return_empty_string: 'Return empty string'
+						__return_empty_string: 'Return empty string',
 					};
 					const snippetTypes: { [key: string]: string[] } = {
-						'null': [
+						null: [
 						],
-						'self': [
+						self: [
 						],
-						'array': [
+						array: [
 							'__return_empty_array',
 						],
-						'callable': [
+						callable: [
 						],
-						'bool': [
+						bool: [
 							'__return_true',
 							'__return_false',
 						],
-						'float': [
+						float: [
 							'__return_zero',
 						],
-						'int': [
+						int: [
 							'__return_zero',
 						],
-						'string': [
+						string: [
 							'__return_empty_string',
 						],
-						'iterable': [
+						iterable: [
 							'__return_empty_array',
 						],
-						'object': [
+						object: [
 						],
 					};
 
-					for ( let [ snippet, documentation ] of Object.entries( snippets ) ) {
+					for (let [snippet, documentation] of Object.entries(snippets)) {
 						// If we don't know the types, show this snippet:
-						let show = ! params[0].types;
+						let show = !params[0].types;
 
-						if ( params[0].types ) {
-							for ( let paramType of params[0].types ) {
+						if (params[0].types) {
+							for (const paramType of params[0].types) {
 								// If there's a parameter type which we're not aware of, show this snippet:
-								if ( ! ( paramType in snippetTypes ) ) {
+								if (!(paramType in snippetTypes)) {
 									show = true;
 									break;
 								}
 
 								// If this parameter type supports this snippet, show it:
-								if ( snippetTypes[ paramType ].includes( snippet ) ) {
+								if (snippetTypes[paramType].includes(snippet)) {
 									show = true;
 								}
 							}
 						}
 
-						if ( ! show ) {
+						if (!show) {
 							continue;
 						}
 
 						snippet = `'${snippet}' `;
 
-						var completionItem = new vscode.CompletionItem( documentation, vscode.CompletionItemKind.Function );
-						completionItem.insertText = new vscode.SnippetString( snippet );
+						const completionItem = new vscode.CompletionItem(documentation, vscode.CompletionItemKind.Function);
+						completionItem.insertText = new vscode.SnippetString(snippet);
 						completionItem.documentation = snippet;
 						completionItem.sortText = '3';
 
-						completions.push( completionItem );
+						completions.push(completionItem);
 					}
 
 					let snippet = `'__return_null' `;
 
-					var nullCompletionItem = new vscode.CompletionItem( 'Return null', vscode.CompletionItemKind.Function );
-					nullCompletionItem.insertText = new vscode.SnippetString( snippet );
+					const nullCompletionItem = new vscode.CompletionItem('Return null', vscode.CompletionItemKind.Function);
+					nullCompletionItem.insertText = new vscode.SnippetString(snippet);
 					nullCompletionItem.documentation = snippet;
 					nullCompletionItem.sortText = '4';
 
-					completions.push( nullCompletionItem );
+					completions.push(nullCompletionItem);
 				}
 
 				if (vscode.window.activeTextEditor !== undefined) {
 					return vscode.commands
 						.executeCommand<vscode.DocumentSymbol[]>(
 							'vscode.executeDocumentSymbolProvider',
-							vscode.window.activeTextEditor.document.uri
+							vscode.window.activeTextEditor.document.uri,
 						)
-						.then(symbols => {
+						.then((symbols) => {
 							if (symbols === undefined) {
 								// @TODO this needs to return a non-positional function
 								return completions;
 							}
 
-							const positionContext = getContainingSymbol( symbols, position );
+							const positionContext = getContainingSymbol(symbols, position);
 
 							let functionName = hook.type + '_' + hook.name.replace( /[^a-z_]/g, '' );
 							let leadingMatch = null;
 
-							if ( positionContext.symbol ) {
-								leadingMatch = document.lineAt(positionContext.symbol.range.end).text.match( /^[\s]+/ );
+							if (positionContext.symbol) {
+								leadingMatch = document.lineAt(positionContext.symbol.range.end).text.match(/^[\s]+/);
 							} else {
-								leadingMatch = document.lineAt(position).text.match( /^[\s]+/ );
+								leadingMatch = document.lineAt(position).text.match(/^[\s]+/);
 							}
 
 							const leadingWhitespace = leadingMatch ? leadingMatch[0] : '';
 
-							if ( positionContext.inMethod && positionContext.symbol ) {
-								let completionMethod = new vscode.CompletionItem('Class method', vscode.CompletionItemKind.Method);
-								completionMethod.insertText = new vscode.SnippetString( `[ \\$this, '${functionName}' ]${suffix}` );
+							if (positionContext.inMethod && positionContext.symbol) {
+								const completionMethod = new vscode.CompletionItem('Class method', vscode.CompletionItemKind.Method);
+								completionMethod.insertText = new vscode.SnippetString(`[ \\$this, '${functionName}' ]${suffix}`);
 								completionMethod.documentation = `[ \$this, '${functionName}' ]${suffix}\n\npublic function ${functionName}${documentationCallback}`;
 								completionMethod.preselect = true;
 								completionMethod.sortText = '0';
@@ -480,34 +503,34 @@ export function activate(context: vscode.ExtensionContext): void {
 
 								let insertMethod = `public function ${functionName}${documentationCallback}`;
 
-								insertMethod = insertMethod.split( '\n' ).map( line => `${leadingWhitespace}${line}` ).join( '\n' );
+								insertMethod = insertMethod.split('\n').map((line) => `${leadingWhitespace}${line}`).join('\n');
 
 								completionMethod.additionalTextEdits.push(
-									vscode.TextEdit.insert( positionContext.symbol.range.end, `\n\n` ),
+									vscode.TextEdit.insert(positionContext.symbol.range.end, '\n\n'),
 								);
 
-								if ( docBlocksEnabled ) {
+								if (docBlocksEnabled) {
 									completionMethod.additionalTextEdits.push(
 										vscode.TextEdit.insert( positionContext.symbol.range.end, docblockLines.map( line => `${leadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
 									);
 								}
 
 								completionMethod.additionalTextEdits.push(
-									vscode.TextEdit.insert( positionContext.symbol.range.end, insertMethod ),
+									vscode.TextEdit.insert(positionContext.symbol.range.end, insertMethod),
 								);
 
-								completions.push( completionMethod );
+								completions.push(completionMethod);
 							} else {
-								let completionFunction = new vscode.CompletionItem('Function', vscode.CompletionItemKind.Function);
+								const completionFunction = new vscode.CompletionItem('Function', vscode.CompletionItemKind.Function);
 								let insertFunction = `function ${functionName}${documentationCallback}`;
 
-								insertFunction = insertFunction.split( '\n' ).map( line => `${leadingWhitespace}${line}` ).join( '\n' );
+								insertFunction = insertFunction.split('\n').map((line) => `${leadingWhitespace}${line}`).join('\n');
 
-								if ( positionContext.inNamespace ) {
-									completionFunction.insertText = new vscode.SnippetString( `__NAMESPACE__ . '\\\\\\\\${functionName}'${suffix}` );
+								if (positionContext.inNamespace) {
+									completionFunction.insertText = new vscode.SnippetString(`__NAMESPACE__ . '\\\\\\\\${functionName}'${suffix}`);
 									completionFunction.documentation = `__NAMESPACE__ . '\\\\${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
 								} else {
-									completionFunction.insertText = new vscode.SnippetString( `'${functionName}'${suffix}` );
+									completionFunction.insertText = new vscode.SnippetString(`'${functionName}'${suffix}`);
 									completionFunction.documentation = `'${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
 								}
 
@@ -517,62 +540,61 @@ export function activate(context: vscode.ExtensionContext): void {
 
 								let insertionPosition: vscode.Position = document.lineAt(position.line).range.end;
 
-								if ( positionContext.symbol ) {
+								if (positionContext.symbol) {
 									insertionPosition = positionContext.symbol.range.end;
 								}
 
 								completionFunction.additionalTextEdits.push(
-									vscode.TextEdit.insert( insertionPosition, `\n\n` ),
+									vscode.TextEdit.insert(insertionPosition, '\n\n'),
 								);
 
-								if ( docBlocksEnabled ) {
+								if (docBlocksEnabled) {
 									completionFunction.additionalTextEdits.push(
 										vscode.TextEdit.insert( insertionPosition, docblockLines.map( line => `${leadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
 									);
 								}
 
 								completionFunction.additionalTextEdits.push(
-									vscode.TextEdit.insert( insertionPosition, insertFunction ),
+									vscode.TextEdit.insert(insertionPosition, insertFunction),
 								);
 
-								completions.push( completionFunction );
+								completions.push(completionFunction);
 							}
 
 							return completions;
-						})
-					;
-				}
+						});
+}
 
 				return completions;
-			}
+			},
 		},
 		',',
-		' '
+		' ',
 	);
 
 	const hoverProvider = vscode.languages.registerHoverProvider(
 		'php',
 		{
-			provideHover(document, position, token) {
+			provideHover(document, position) {
 				const linePrefix = document.lineAt(position).text.substr(0, position.character);
 
-				if ( ! isInAction( linePrefix ) && ! isInFilter( linePrefix ) ) {
+				if (!isInAction(linePrefix) && !isInFilter(linePrefix)) {
 					return undefined;
 				}
 
-				const hook = getHook( document.getText( document.getWordRangeAtPosition( position ) ) );
+				const hook = getHook(document.getText(document.getWordRangeAtPosition(position)));
 
-				if ( ! hook ) {
+				if (!hook) {
 					return undefined;
 				}
 
-				return new vscode.Hover( [
-					new vscode.MarkdownString().appendCodeblock( hook.doc.description ),
-					get_hook_description( hook ),
-				] );
-			}
-		}
+				return new vscode.Hover([
+					new vscode.MarkdownString().appendCodeblock(hook.doc.description),
+					getHookDescription(hook),
+				]);
+			},
+		},
 	);
 
-	context.subscriptions.push(hooksProvider,callbackProvider,hoverProvider);
+	context.subscriptions.push(hooksProvider, callbackProvider, hoverProvider);
 }
