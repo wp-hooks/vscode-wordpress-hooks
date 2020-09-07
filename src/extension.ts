@@ -567,7 +567,7 @@ export function activate(context: vscode.ExtensionContext): void {
 				}
 
 				return new vscode.Hover( [
-					new vscode.MarkdownString( hook.doc.description ),
+					new vscode.MarkdownString().appendCodeblock( hook.doc.description ),
 					get_hook_description( hook ),
 				] );
 			}
