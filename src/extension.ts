@@ -163,6 +163,11 @@ function getTagType(
 		type = 'int';
 	}
 
+	// Convert stdClass to object to avoid fatals when the stdClass gets promoted to a real class.
+	if (type === '\\stdClass') {
+		type = 'object';
+	}
+
 	// Check the allowed types, ignoring unknown types such as class and interface names.
 	if (allowedTypes[type] && (allowedTypes[type] > typeDeclarationsSupport)) {
 		return null;
