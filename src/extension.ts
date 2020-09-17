@@ -302,7 +302,7 @@ export function activate(
 						return `${type.type} ${val}`;
 					}
 
-					return `\?${type.type} ${val}`;
+					return `?${type.type} ${val}`;
 				}).join(', ');
 				const docArgsString = snippetArgsString.replace(/\\\$/g, '$');
 
@@ -342,7 +342,7 @@ export function activate(
 
 					if (returnType) {
 						if (returnType.nullable) {
-							returnTypeString = ` : \?${returnType.type}`;
+							returnTypeString = ` : ?${returnType.type}`;
 						} else {
 							returnTypeString = ` : ${returnType.type}`;
 						}
@@ -505,7 +505,7 @@ export function activate(
 							if (positionContext.inMethod && positionContext.symbol) {
 								const completionMethod = new vscode.CompletionItem('Class method', vscode.CompletionItemKind.Method);
 								completionMethod.insertText = new vscode.SnippetString(`[ \\$this, '${functionName}' ]${suffix}`);
-								completionMethod.documentation = `[ \$this, '${functionName}' ]${suffix}\n\npublic function ${functionName}${documentationCallback}`;
+								completionMethod.documentation = `[ $this, '${functionName}' ]${suffix}\n\npublic function ${functionName}${documentationCallback}`;
 								completionMethod.preselect = true;
 								completionMethod.sortText = '0';
 								completionMethod.additionalTextEdits = [];
