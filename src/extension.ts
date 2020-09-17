@@ -30,16 +30,13 @@ function getHookDescription(
 		}
 
 		const types = tag.types.join('|');
-		description += "\n\n";
-		description += '_@param_' + " `" + types + " " + tag.variable + "`  \n";
-		description += tag.content;
+		description += `\n\n_@param_ \`${types} ${tag.variable}\`  \n${tag.content}`;
 	});
 
 	const everythingElse = hook.doc.tags.filter((tag) => tag.name !== 'param');
 
-	everything_else.forEach(function( tag: Tag ){
-		description += "\n\n";
-		description += '_@' + tag.name + '_' + " " + ( tag.content || "" ) + " " + ( tag.description || "" );
+	everythingElse.forEach((tag: Tag) => {
+		description += `\n\n_@${tag.name}_ ${tag.content || ''} ${tag.description || ''}`;
 	});
 
 	return new vscode.MarkdownString(description);
@@ -315,16 +312,22 @@ export function activate(
 				const paramNameLengths: number[] = [0];
 
 				params.forEach((param) => {
-					param.types && paramTypeLengths.push(param.types.join('|').length);
-					param.variable && paramNameLengths.push(param.variable.length);
+					if (param.types) {
+						paramTypeLengths.push(param.types.join('|').length);
+					}
+					if (param.variable) {
+						paramNameLengths.push(param.variable.length);
+					}
 				});
 
 				const longestParamType = Math.max(...paramTypeLengths);
 				const longestParamName = Math.max(...paramNameLengths);
 
-				params.forEach( function( param ) {
-					docblockLines.push( ' * @param ' + ( param.types?.join( '|' ).padEnd( longestParamType, ' ' ) || '' ) + ' ' + ( param.variable?.padEnd( longestParamName, ' ' ) || '' ) + ' ' + param.content );
-				} );
+				params.forEach((param) => {
+					const types = param.types?.join('|').padEnd(longestParamType, ' ') || '';
+					const variable = param.variable?.padEnd(longestParamName, ' ') || '';
+					docblockLines.push(` * @param ${types} ${variable} ${param.content}`);
+				});
 
 				const suffix = (params.length > 1 ? `, 10, ${params.length} ` : ' ');
 				let returnTypeString = '';
@@ -340,14 +343,15 @@ export function activate(
 						}
 					}
 
-					snippetCallback = '( ' + snippetArgsString + ' )' + returnTypeString + ' {\n\t${1}\n\treturn \\' + params[0].variable + ';\n}';
-					documentationCallback = '( ' + docArgsString + ' )' + returnTypeString + ' {\n\treturn ' + params[0].variable + ';\n}';
+					snippetCallback = `( ${snippetArgsString} )${returnTypeString} {\n\t\${1}\n\treturn \\${params[0].variable};\n}`;
+					documentationCallback = `( ${docArgsString} )${returnTypeString} {\n\treturn ${params[0].variable};\n}`;
 
-					docblockLines.push( ' * @return ' + ( params[0].types?.join( '|' ) || '' ) + ' ' + params[0].content );
+					docblockLines.push(` * @return ${params[0].types?.join('|') || ''} ${params[0].content}`);
 				} else {
-					returnTypeString = ( getMinPHPVersion() >= 7.1 ) ? ' : void' : '';
-					snippetCallback = '(' + ( snippetArgsString ? ' ' + snippetArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n\t${1}\n}';
-					documentationCallback = '(' + ( docArgsString ? ' ' + docArgsString + ' ' : '' ) + ')' + returnTypeString + ' {\n}';
+					const actionArgsString = snippetArgsString ? ` ${snippetArgsString} ` : '';
+					returnTypeString = (getMinPHPVersion() >= 7.1) ? ' : void' : '';
+					snippetCallback = `(${actionArgsString})${returnTypeString} {\n\t\${1}\n}`;
+					documentationCallback = `(${actionArgsString})${returnTypeString} {\n}`;
 				}
 
 				docblockLines.push(' */');
@@ -364,7 +368,7 @@ export function activate(
 
 				if (docBlocksEnabled) {
 					completionClosure.additionalTextEdits = [
-						vscode.TextEdit.insert( position.with( { character: 0 } ), docblockLines.map( line => `${lineLeadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
+						vscode.TextEdit.insert(position.with({ character: 0 }), `${docblockLines.map((line) => `${lineLeadingWhitespace}${line}`).join('\n')}\n`),
 					];
 				}
 
@@ -373,8 +377,8 @@ export function activate(
 				if (hook.type === 'filter') {
 					const completionArrow = new vscode.CompletionItem('Arrow function', vscode.CompletionItemKind.Function);
 
-					const snippetArrow = '( ' + snippetArgsString + ' )' + returnTypeString + ' => \\' + params[0].variable + '${1}';
-					const documentationArrow = '( ' + docArgsString + ' )' + returnTypeString + ' => ' + params[0].variable;
+					const snippetArrow = `( ${snippetArgsString} )${returnTypeString} => \\${params[0].variable}\${1}`;
+					const documentationArrow = `( ${docArgsString} )${returnTypeString} => ${params[0].variable}`;
 
 					completionArrow.insertText = new vscode.SnippetString(`fn${snippetArrow}${suffix}`);
 					completionArrow.documentation = `fn${documentationArrow}${suffix}`;
@@ -382,7 +386,7 @@ export function activate(
 
 					if (docBlocksEnabled) {
 						completionArrow.additionalTextEdits = [
-							vscode.TextEdit.insert( position.with( { character: 0 } ), docblockLines.map( line => `${lineLeadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
+							vscode.TextEdit.insert(position.with({ character: 0 }), `${docblockLines.map((line) => `${lineLeadingWhitespace}${line}`).join('\n')}\n`),
 						];
 					}
 
@@ -458,7 +462,7 @@ export function activate(
 						completions.push(completionItem);
 					}
 
-					let snippet = `'__return_null' `;
+					const snippet = '\'__return_null\' ';
 
 					const nullCompletionItem = new vscode.CompletionItem('Return null', vscode.CompletionItemKind.Function);
 					nullCompletionItem.insertText = new vscode.SnippetString(snippet);
@@ -482,7 +486,7 @@ export function activate(
 
 							const positionContext = getContainingSymbol(symbols, position);
 
-							let functionName = hook.type + '_' + hook.name.replace( /[^a-z_]/g, '' );
+							const functionName = `${hook.type}_${hook.name.replace(/[^a-z_]/g, '')}`;
 							let leadingMatch = null;
 
 							if (positionContext.symbol) {
@@ -511,7 +515,7 @@ export function activate(
 
 								if (docBlocksEnabled) {
 									completionMethod.additionalTextEdits.push(
-										vscode.TextEdit.insert( positionContext.symbol.range.end, docblockLines.map( line => `${leadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
+										vscode.TextEdit.insert(positionContext.symbol.range.end, `${docblockLines.map((line) => `${leadingWhitespace}${line}`).join('\n')}\n`),
 									);
 								}
 
@@ -550,7 +554,7 @@ export function activate(
 
 								if (docBlocksEnabled) {
 									completionFunction.additionalTextEdits.push(
-										vscode.TextEdit.insert( insertionPosition, docblockLines.map( line => `${leadingWhitespace}${line}` ).join( '\n' ) + '\n' ),
+										vscode.TextEdit.insert(insertionPosition, `${docblockLines.map((line) => `${leadingWhitespace}${line}`).join('\n')}\n`),
 									);
 								}
 
