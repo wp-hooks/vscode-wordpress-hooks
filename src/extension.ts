@@ -103,7 +103,7 @@ function getTagType(
 		object: 7.2,
 	};
 
-	const tagType: tagType = {
+	const typeData: tagType = {
 		type: '',
 		nullable: false,
 	};
@@ -124,10 +124,10 @@ function getTagType(
 	if (types.length === 2 && typeDeclarationsSupport >= 7.1) {
 		if (types[0] === 'null') {
 			types.splice(0, 1);
-			tagType.nullable = true;
+			typeData.nullable = true;
 		} else if (types[1] === 'null') {
 			types.splice(1, 1);
-			tagType.nullable = true;
+			typeData.nullable = true;
 		}
 	}
 
@@ -173,9 +173,9 @@ function getTagType(
 		return null;
 	}
 
-	tagType.type = type;
+	typeData.type = type;
 
-	return tagType;
+	return typeData;
 }
 
 function getReturnType(
