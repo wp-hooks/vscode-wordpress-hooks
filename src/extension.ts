@@ -434,7 +434,7 @@ export function activate(
 						],
 					};
 
-					for (let [snippet, documentation] of Object.entries(snippets)) {
+					for (const [snippet, documentation] of Object.entries(snippets)) {
 						// If we don't know the types, show this snippet:
 						let show = !params[0].types;
 
@@ -453,18 +453,16 @@ export function activate(
 							}
 						}
 
-						if (!show) {
-							continue;
+						if (show) {
+							const itemSnippet = `'${snippet}' `;
+							const completionItem = new vscode.CompletionItem(documentation, vscode.CompletionItemKind.Function);
+
+							completionItem.insertText = new vscode.SnippetString(itemSnippet);
+							completionItem.documentation = itemSnippet;
+							completionItem.sortText = '3';
+
+							completions.push(completionItem);
 						}
-
-						snippet = `'${snippet}' `;
-
-						const completionItem = new vscode.CompletionItem(documentation, vscode.CompletionItemKind.Function);
-						completionItem.insertText = new vscode.SnippetString(snippet);
-						completionItem.documentation = snippet;
-						completionItem.sortText = '3';
-
-						completions.push(completionItem);
 					}
 
 					const snippet = '\'__return_null\' ';
