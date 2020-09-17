@@ -36,7 +36,7 @@ function getHookDescription(
 	const everythingElse = hook.doc.tags.filter((tag) => tag.name !== 'param');
 
 	everythingElse.forEach((tag: Tag) => {
-		description += `\n\n_@${tag.name}_ ${tag.content || ''} ${tag.description || ''}`;
+		description += `\n\n_@${tag.name}_ ${tag.content || tag.refers || ''} ${tag.description || ''}`;
 	});
 
 	return new vscode.MarkdownString(description);
