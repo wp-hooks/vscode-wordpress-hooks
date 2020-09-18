@@ -1,6 +1,10 @@
 # WordPress Hooks Intellisense for VS Code
 
-This extension provides autocomplete support for WordPress action and filter names, and the corresponding callback function.
+This extension provides intellisense and autocomplete for WordPress hooks, actions, and filters.
+
+* Autocomplete for action and filter names
+* Autocomplete for action and filter callback functions
+* Hover information on action and filter names
 
 Last updated for WordPress 5.5.
 
