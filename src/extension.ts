@@ -482,14 +482,40 @@ export function activate(
 							vscode.window.activeTextEditor.document.uri,
 						)
 						.then((symbols) => {
+							const functionName = `${hook.type}_${hook.name.replace(/[^a-z_]/g, '')}`;
+							const completionFunction = new vscode.CompletionItem('Function', vscode.CompletionItemKind.Function);
+							const insertFunction = `function ${functionName}${documentationCallback}`;
+							let insertionPosition = document.lineAt(position.line).range.end;
+
+							completionFunction.insertText = new vscode.SnippetString(`'${functionName}'${suffix}`);
+							completionFunction.documentation = `'${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
+
+							completionFunction.preselect = true;
+							completionFunction.sortText = '0';
+							completionFunction.additionalTextEdits = [];
+
 							if (symbols === undefined) {
-								// @TODO this needs to return a non-positional function
+								completionFunction.additionalTextEdits.push(
+									vscode.TextEdit.insert(insertionPosition, '\n\n'),
+								);
+
+								if (docBlocksEnabled) {
+									completionFunction.additionalTextEdits.push(
+										vscode.TextEdit.insert(insertionPosition, `${docblockLines.join('\n')}\n`),
+									);
+								}
+
+								completionFunction.additionalTextEdits.push(
+									vscode.TextEdit.insert(insertionPosition, insertFunction),
+								);
+
+								completions.push(completionFunction);
+
 								return completions;
 							}
 
 							const positionContext = getContainingSymbol(symbols, position);
 
-							const functionName = `${hook.type}_${hook.name.replace(/[^a-z_]/g, '')}`;
 							let leadingMatch = null;
 
 							if (positionContext.symbol) {
@@ -528,24 +554,10 @@ export function activate(
 
 								completions.push(completionMethod);
 							} else {
-								const completionFunction = new vscode.CompletionItem('Function', vscode.CompletionItemKind.Function);
-								let insertFunction = `function ${functionName}${documentationCallback}`;
-
-								insertFunction = insertFunction.split('\n').map((line) => `${leadingWhitespace}${line}`).join('\n');
-
 								if (positionContext.inNamespace) {
 									completionFunction.insertText = new vscode.SnippetString(`__NAMESPACE__ . '\\\\\\\\${functionName}'${suffix}`);
 									completionFunction.documentation = `__NAMESPACE__ . '\\\\${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
-								} else {
-									completionFunction.insertText = new vscode.SnippetString(`'${functionName}'${suffix}`);
-									completionFunction.documentation = `'${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
 								}
-
-								completionFunction.preselect = true;
-								completionFunction.sortText = '0';
-								completionFunction.additionalTextEdits = [];
-
-								let insertionPosition: vscode.Position = document.lineAt(position.line).range.end;
 
 								if (positionContext.symbol) {
 									insertionPosition = positionContext.symbol.range.end;
