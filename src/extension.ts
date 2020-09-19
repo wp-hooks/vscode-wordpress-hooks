@@ -60,6 +60,19 @@ function isInAction(
 	return line.match(/(add|remove|has|doing|did)_action\([\s]*('|")[^"|']*$/);
 }
 
+function isInHookUse(
+	line: string,
+): RegExpMatchArray | null {
+	return line.match(/add_(filter|action)\(/);
+}
+
+function isInFunctionCallback(
+	line: string,
+): RegExpMatchArray | null {
+	//                 add_   filter|action  (    '" {  hook     } '" ,    '" {  func     }
+	return line.match(/add_(?:filter|action)\(\s*['"](?<hook>\S+?)['"],\s*['"](?<func>\S*)/);
+}
+
 function isInFunctionDeclaration(
 	line: string,
 ): RegExpMatchArray | null {
@@ -243,6 +256,33 @@ function getContainingSymbol(
 	context.inFunction = (context.symbol.kind === vscode.SymbolKind.Function);
 
 	return context;
+}
+
+function getSymbolLocationForGlobalFunction(match: RegExpMatchArray) {
+	const search = match.groups?.func || null;
+
+	if (!search) {
+		return undefined;
+	}
+
+	return searchWorkspaceSymbols(search).then((symbols) => {
+		if (!symbols) {
+			return undefined;
+		}
+
+		const functionSymbols = symbols.filter((symbol) => symbol.kind === vscode.SymbolKind.Function);
+		const functionLocations = functionSymbols.map((symbol) => symbol.location);
+
+		return functionLocations;
+	});
+}
+
+function searchWorkspaceSymbols(search: string) {
+	return vscode.commands
+		.executeCommand<vscode.SymbolInformation[]>(
+			'vscode.executeWorkspaceSymbolProvider',
+			search,
+		);
 }
 
 export function activate(
@@ -616,5 +656,32 @@ export function activate(
 		},
 	);
 
-	context.subscriptions.push(hooksProvider, callbackProvider, hoverProvider);
+	const definitionProvider = vscode.languages.registerDefinitionProvider(
+		'php',
+		{
+			provideDefinition(document, position) {
+				const pos = document.getWordRangeAtPosition(position);
+
+				if (!pos) {
+					return undefined;
+				}
+
+				const linePrefix = document.lineAt(position).text.substr(0, pos.end.character);
+
+				if (!isInHookUse(linePrefix)) {
+					return undefined;
+				}
+
+				const functionCallback = isInFunctionCallback(linePrefix);
+
+				if (functionCallback) {
+					return getSymbolLocationForGlobalFunction(functionCallback);
+				}
+
+				return undefined;
+			},
+		},
+	);
+
+	context.subscriptions.push(hooksProvider, callbackProvider, hoverProvider, definitionProvider);
 }
