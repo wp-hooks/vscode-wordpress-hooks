@@ -63,7 +63,8 @@ function isInAction(
 function isInFunctionDeclaration(
 	line: string,
 ): RegExpMatchArray | null {
-	return line.match(/add_(filter|action)\([\s]*['|"]([\S]+?)['|"],[\s]*[\w]*?$/);
+	//                 add_   filter|action  (    '"    {hook}     '" ,
+	return line.match(/add_(?:filter|action)\(\s*['"](?<hook>\S+?)['"],\s*\w*?$/);
 }
 
 function getHook(
@@ -281,7 +282,7 @@ export function activate(
 					return undefined;
 				}
 
-				const hook = getHook(declaration[2]);
+				const hook = getHook(declaration.groups?.hook || '');
 
 				if (!hook) {
 					return undefined;
