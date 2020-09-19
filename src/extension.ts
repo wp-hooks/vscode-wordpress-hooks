@@ -270,7 +270,7 @@ function getSymbolLocationForGlobalFunction(match: RegExpMatchArray) {
 			return undefined;
 		}
 
-		const functionSymbols = symbols.filter((symbol) => symbol.kind === vscode.SymbolKind.Function);
+		const functionSymbols = symbols.filter((symbol) => symbol.kind === vscode.SymbolKind.Function && symbol.name === search);
 		const functionLocations = functionSymbols.map((symbol) => symbol.location);
 
 		return functionLocations;
