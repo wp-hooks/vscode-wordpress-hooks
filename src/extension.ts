@@ -270,7 +270,14 @@ function getSymbolLocationForGlobalFunction(match: RegExpMatchArray) {
 			return undefined;
 		}
 
-		const functionSymbols = symbols.filter((symbol) => symbol.kind === vscode.SymbolKind.Function && symbol.name === search);
+		// eslint-disable-next-line arrow-body-style
+		const functionSymbols = symbols.filter((symbol) => {
+			return (
+				symbol.name === search
+				&& !symbol.containerName
+				&& symbol.kind === vscode.SymbolKind.Function
+			);
+		});
 		const functionLocations = functionSymbols.map((symbol) => symbol.location);
 
 		return functionLocations;
