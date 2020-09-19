@@ -4,6 +4,7 @@ This extension provides intellisense and autocomplete for WordPress hooks, actio
 
 * Autocomplete for action and filter names
 * Autocomplete for action and filter callback functions
+* "Go to Definition" support for action and filter callback functions
 * Hover information on action and filter names
 
 Last updated for WordPress 5.5.
