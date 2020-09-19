@@ -66,6 +66,13 @@ function isInHookUse(
 	return line.match(/add_(filter|action)\(/);
 }
 
+
+function isInCurrentNamespaceFunctionCallback(
+	line: string,
+): RegExpMatchArray | null {
+	return line.match(/add_(?:filter|action)\(\s*['"](?<hook>\S+?)['"],\s*__NAMESPACE__ \. ['"](?<func>\S*)/);
+}
+
 function isInFunctionCallback(
 	line: string,
 ): RegExpMatchArray | null {
@@ -275,6 +282,62 @@ function getSymbolLocationForGlobalFunction(match: RegExpMatchArray) {
 			return (
 				symbol.name === search
 				&& !symbol.containerName
+				&& symbol.kind === vscode.SymbolKind.Function
+			);
+		});
+		const functionLocations = functionSymbols.map((symbol) => symbol.location);
+
+		return functionLocations;
+	});
+}
+
+function getCurrentNamespace() {
+	if (vscode.window.activeTextEditor === undefined) {
+		return undefined;
+	}
+
+	const symbolProvider = vscode.commands
+		.executeCommand<vscode.DocumentSymbol[]>(
+			'vscode.executeDocumentSymbolProvider',
+			vscode.window.activeTextEditor.document.uri,
+		);
+
+	return symbolProvider.then((symbols) => {
+		if (!symbols) {
+			return undefined;
+		}
+
+		const namespaces = symbols.filter((symbol) => symbol.kind === vscode.SymbolKind.Namespace);
+
+		if (!namespaces) {
+			return undefined;
+		}
+
+		const [currentNamespace] = namespaces;
+
+		return currentNamespace.name;
+	});
+}
+
+function getSymbolLocationForNamespacedFunction(namespace: string, match: RegExpMatchArray) {
+	const search = match.groups?.func || null;
+
+	if (!search) {
+		return undefined;
+	}
+
+	const functionSearch = search.replace(/^\\\\?/g, '');
+
+	return searchWorkspaceSymbols(functionSearch).then((symbols) => {
+		if (!symbols) {
+			return undefined;
+		}
+
+		// eslint-disable-next-line arrow-body-style
+		const functionSymbols = symbols.filter((symbol) => {
+			return (
+				symbol.name === functionSearch
+				&& symbol.containerName === namespace
 				&& symbol.kind === vscode.SymbolKind.Function
 			);
 		});
@@ -677,6 +740,24 @@ export function activate(
 
 				if (!isInHookUse(linePrefix)) {
 					return undefined;
+				}
+
+				const namespacedFunctionCallback = isInCurrentNamespaceFunctionCallback(linePrefix);
+
+				if (namespacedFunctionCallback) {
+					const currentNamespace = getCurrentNamespace();
+
+					if (!currentNamespace) {
+						return undefined;
+					}
+
+					return currentNamespace.then((namespace) => {
+						if (!namespace) {
+							return undefined;
+						}
+
+						return getSymbolLocationForNamespacedFunction(namespace, namespacedFunctionCallback);
+					});
 				}
 
 				const functionCallback = isInFunctionCallback(linePrefix);
