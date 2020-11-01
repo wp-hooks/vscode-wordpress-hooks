@@ -583,7 +583,7 @@ export function activate(
 
 							return completions;
 						});
-}
+				}
 
 				return completions;
 			},
