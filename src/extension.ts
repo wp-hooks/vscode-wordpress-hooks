@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import actions from '@johnbillion/wp-hooks/hooks/actions.json';
-import filters from '@johnbillion/wp-hooks/hooks/filters.json';
+import { hooks as actions } from '@johnbillion/wp-hooks/hooks/actions.json';
+import { hooks as filters } from '@johnbillion/wp-hooks/hooks/filters.json';
 import { Hook, Tag } from '@johnbillion/wp-hooks/interface';
 import * as meta from '../package.json';
 
