@@ -5,17 +5,17 @@ on:
   pull_request:
 
 jobs:
-	test:
-		if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-		name: Linter
-		runs-on: ubuntu-18.04
-		steps:
-		- name: Checkout repository
-			uses: actions/checkout@v1
+  test:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    name: Linter
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v1
 
-		- name: Install dependencies
-			run: npm install
+    - name: Install dependencies
+      run: npm install
 
-		- name: Run Linting
-			run: |
-				npm run lint
+    - name: Run Linting
+      run: |
+        npm run lint
