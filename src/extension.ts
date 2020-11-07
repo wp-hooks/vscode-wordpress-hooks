@@ -366,37 +366,37 @@ export function activate(
 				const lineLeadingMatch = document.lineAt(position).text.match(/^[\s]+/);
 				const lineLeadingWhitespace = lineLeadingMatch ? lineLeadingMatch[0] : '';
 
-				const completionClosure = new vscode.CompletionItem('Closure', vscode.CompletionItemKind.Function);
-				completionClosure.insertText = new vscode.SnippetString(`function${snippetCallback}${suffix}`);
-				completionClosure.documentation = `function${documentationCallback}${suffix}`;
-				completionClosure.preselect = true;
-				completionClosure.sortText = '1';
+				const completionItemForClosure = new vscode.CompletionItem('Closure', vscode.CompletionItemKind.Function);
+				completionItemForClosure.insertText = new vscode.SnippetString(`function${snippetCallback}${suffix}`);
+				completionItemForClosure.documentation = `function${documentationCallback}${suffix}`;
+				completionItemForClosure.preselect = true;
+				completionItemForClosure.sortText = '1';
 
 				if (docBlocksEnabled) {
-					completionClosure.additionalTextEdits = [
+					completionItemForClosure.additionalTextEdits = [
 						vscode.TextEdit.insert(position.with({ character: 0 }), `${docblockLines.map((line) => `${lineLeadingWhitespace}${line}`).join('\n')}\n`),
 					];
 				}
 
-				completions.push(completionClosure);
+				completions.push(completionItemForClosure);
 
 				if (hook.type === 'filter') {
-					const completionArrow = new vscode.CompletionItem('Arrow function', vscode.CompletionItemKind.Function);
+					const completionItemForArrow = new vscode.CompletionItem('Arrow function', vscode.CompletionItemKind.Function);
 
 					const snippetArrow = `( ${snippetArgsString} )${returnTypeString} => \\${params[0].variable}\${1}`;
 					const documentationArrow = `( ${docArgsString} )${returnTypeString} => ${params[0].variable}`;
 
-					completionArrow.insertText = new vscode.SnippetString(`fn${snippetArrow}${suffix}`);
-					completionArrow.documentation = `fn${documentationArrow}${suffix}`;
-					completionArrow.sortText = '2';
+					completionItemForArrow.insertText = new vscode.SnippetString(`fn${snippetArrow}${suffix}`);
+					completionItemForArrow.documentation = `fn${documentationArrow}${suffix}`;
+					completionItemForArrow.sortText = '2';
 
 					if (docBlocksEnabled) {
-						completionArrow.additionalTextEdits = [
+						completionItemForArrow.additionalTextEdits = [
 							vscode.TextEdit.insert(position.with({ character: 0 }), `${docblockLines.map((line) => `${lineLeadingWhitespace}${line}`).join('\n')}\n`),
 						];
 					}
 
-					completions.push(completionArrow);
+					completions.push(completionItemForArrow);
 
 					const snippets = {
 						__return_true: 'Return true',
@@ -456,24 +456,24 @@ export function activate(
 
 						if (show) {
 							const itemSnippet = `'${snippet}' `;
-							const completionItem = new vscode.CompletionItem(documentation, vscode.CompletionItemKind.Function);
+							const completionItemForReturn = new vscode.CompletionItem(documentation, vscode.CompletionItemKind.Function);
 
-							completionItem.insertText = new vscode.SnippetString(itemSnippet);
-							completionItem.documentation = itemSnippet;
-							completionItem.sortText = '3';
+							completionItemForReturn.insertText = new vscode.SnippetString(itemSnippet);
+							completionItemForReturn.documentation = itemSnippet;
+							completionItemForReturn.sortText = '3';
 
-							completions.push(completionItem);
+							completions.push(completionItemForReturn);
 						}
 					}
 
 					const snippet = '\'__return_null\' ';
 
-					const nullCompletionItem = new vscode.CompletionItem('Return null', vscode.CompletionItemKind.Function);
-					nullCompletionItem.insertText = new vscode.SnippetString(snippet);
-					nullCompletionItem.documentation = snippet;
-					nullCompletionItem.sortText = '4';
+					const completionItemForReturnNull = new vscode.CompletionItem('Return null', vscode.CompletionItemKind.Function);
+					completionItemForReturnNull.insertText = new vscode.SnippetString(snippet);
+					completionItemForReturnNull.documentation = snippet;
+					completionItemForReturnNull.sortText = '4';
 
-					completions.push(nullCompletionItem);
+					completions.push(completionItemForReturnNull);
 				}
 
 				if (vscode.window.activeTextEditor !== undefined) {
@@ -484,33 +484,33 @@ export function activate(
 						)
 						.then((symbols) => {
 							const functionName = `${hook.type}_${hook.name.replace(/[^a-z_]/g, '')}`;
-							const completionFunction = new vscode.CompletionItem('Function', vscode.CompletionItemKind.Function);
+							const completionItemForFunction = new vscode.CompletionItem('Function', vscode.CompletionItemKind.Function);
 							const insertFunction = `function ${functionName}${documentationCallback}`;
 							let insertionPosition = document.lineAt(position.line).range.end;
 
-							completionFunction.insertText = new vscode.SnippetString(`'${functionName}'${suffix}`);
-							completionFunction.documentation = `'${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
+							completionItemForFunction.insertText = new vscode.SnippetString(`'${functionName}'${suffix}`);
+							completionItemForFunction.documentation = `'${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
 
-							completionFunction.preselect = true;
-							completionFunction.sortText = '0';
-							completionFunction.additionalTextEdits = [];
+							completionItemForFunction.preselect = true;
+							completionItemForFunction.sortText = '0';
+							completionItemForFunction.additionalTextEdits = [];
 
 							if (symbols === undefined) {
-								completionFunction.additionalTextEdits.push(
+								completionItemForFunction.additionalTextEdits.push(
 									vscode.TextEdit.insert(insertionPosition, '\n\n'),
 								);
 
 								if (docBlocksEnabled) {
-									completionFunction.additionalTextEdits.push(
+									completionItemForFunction.additionalTextEdits.push(
 										vscode.TextEdit.insert(insertionPosition, `${docblockLines.join('\n')}\n`),
 									);
 								}
 
-								completionFunction.additionalTextEdits.push(
+								completionItemForFunction.additionalTextEdits.push(
 									vscode.TextEdit.insert(insertionPosition, insertFunction),
 								);
 
-								completions.push(completionFunction);
+								completions.push(completionItemForFunction);
 
 								return completions;
 							}
@@ -528,57 +528,57 @@ export function activate(
 							const leadingWhitespace = leadingMatch ? leadingMatch[0] : '';
 
 							if (positionContext.inMethod && positionContext.symbol) {
-								const completionMethod = new vscode.CompletionItem('Class method', vscode.CompletionItemKind.Method);
-								completionMethod.insertText = new vscode.SnippetString(`[ \\$this, '${functionName}' ]${suffix}`);
-								completionMethod.documentation = `[ $this, '${functionName}' ]${suffix}\n\npublic function ${functionName}${documentationCallback}`;
-								completionMethod.preselect = true;
-								completionMethod.sortText = '0';
-								completionMethod.additionalTextEdits = [];
+								const completionItemForMethod = new vscode.CompletionItem('Class method', vscode.CompletionItemKind.Method);
+								completionItemForMethod.insertText = new vscode.SnippetString(`[ \\$this, '${functionName}' ]${suffix}`);
+								completionItemForMethod.documentation = `[ $this, '${functionName}' ]${suffix}\n\npublic function ${functionName}${documentationCallback}`;
+								completionItemForMethod.preselect = true;
+								completionItemForMethod.sortText = '0';
+								completionItemForMethod.additionalTextEdits = [];
 
 								let insertMethod = `public function ${functionName}${documentationCallback}`;
 
 								insertMethod = insertMethod.split('\n').map((line) => `${leadingWhitespace}${line}`).join('\n');
 
-								completionMethod.additionalTextEdits.push(
+								completionItemForMethod.additionalTextEdits.push(
 									vscode.TextEdit.insert(positionContext.symbol.range.end, '\n\n'),
 								);
 
 								if (docBlocksEnabled) {
-									completionMethod.additionalTextEdits.push(
+									completionItemForMethod.additionalTextEdits.push(
 										vscode.TextEdit.insert(positionContext.symbol.range.end, `${docblockLines.map((line) => `${leadingWhitespace}${line}`).join('\n')}\n`),
 									);
 								}
 
-								completionMethod.additionalTextEdits.push(
+								completionItemForMethod.additionalTextEdits.push(
 									vscode.TextEdit.insert(positionContext.symbol.range.end, insertMethod),
 								);
 
-								completions.push(completionMethod);
+								completions.push(completionItemForMethod);
 							} else {
 								if (positionContext.inNamespace) {
-									completionFunction.insertText = new vscode.SnippetString(`__NAMESPACE__ . '\\\\\\\\${functionName}'${suffix}`);
-									completionFunction.documentation = `__NAMESPACE__ . '\\\\${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
+									completionItemForFunction.insertText = new vscode.SnippetString(`__NAMESPACE__ . '\\\\\\\\${functionName}'${suffix}`);
+									completionItemForFunction.documentation = `__NAMESPACE__ . '\\\\${functionName}'${suffix}\n\nfunction ${functionName}${documentationCallback}`;
 								}
 
 								if (positionContext.symbol) {
 									insertionPosition = positionContext.symbol.range.end;
 								}
 
-								completionFunction.additionalTextEdits.push(
+								completionItemForFunction.additionalTextEdits.push(
 									vscode.TextEdit.insert(insertionPosition, '\n\n'),
 								);
 
 								if (docBlocksEnabled) {
-									completionFunction.additionalTextEdits.push(
+									completionItemForFunction.additionalTextEdits.push(
 										vscode.TextEdit.insert(insertionPosition, `${docblockLines.map((line) => `${leadingWhitespace}${line}`).join('\n')}\n`),
 									);
 								}
 
-								completionFunction.additionalTextEdits.push(
+								completionItemForFunction.additionalTextEdits.push(
 									vscode.TextEdit.insert(insertionPosition, insertFunction),
 								);
 
-								completions.push(completionFunction);
+								completions.push(completionItemForFunction);
 							}
 
 							return completions;
