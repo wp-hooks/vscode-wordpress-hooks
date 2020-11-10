@@ -357,7 +357,7 @@ export function activate(
 					const actionArgsString = snippetArgsString ? ` ${snippetArgsString} ` : '';
 					returnTypeString = (getMinPHPVersion() >= 7.1) ? ' : void' : '';
 					snippetCallback = `(${actionArgsString})${returnTypeString} {\n\t\${1}\n}`;
-					documentationCallback = `(${actionArgsString})${returnTypeString} {\n}`;
+					documentationCallback = `(${docArgsString})${returnTypeString} {\n}`;
 				}
 
 				docblockLines.push(' */');
