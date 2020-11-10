@@ -3,10 +3,14 @@
 This extension provides intellisense and autocomplete for WordPress hooks, actions, and filters.
 
 * Autocomplete for action and filter names
+  - Supports all actions and filters up to WordPress 5.5
 * Autocomplete for action and filter callback functions
+  - Supports functions, class methods, closures, arrow functions, and more
+  - The parameter types, return type, and a docblock are included where appropriate
+  - Various options can be controlled in the settings for the extension
 * Hover information on action and filter names
+  - Includes a useful link to the developer.wordpress.org documentation site
 
-Last updated for WordPress 5.5 (August 2020).
 
 ## Usage
 
@@ -22,11 +26,13 @@ An autocompleted closure callback looks like this:
 
 [![Screenshot of VS Code showing a completed callback closure for the add_filter function](images/screenshot-3.png?v=0.3.0)](images/screenshot-3.png)
 
-Parameter types, the return type, and a docblock are included where appropriate. The behaviour of these can be adjusted in the settings for the extension.
+Hover information for an action or filter name looks like this:
+
+[![Screenshot of VS Code showing hover information for an action](images/screenshot-4.png?v=0.5.0)](images/screenshot-4.png)
 
 ## FAQ
 
-### Which functions does the autocomplete list work with?
+### Which functions does the autocomplete list and hover information work with?
 
 * `add_action()`
 * `add_filter()`
@@ -49,6 +55,18 @@ Yes, open the preferences for VS Code and go to the **Extensions -> WordPress Ho
 ### Where does the list of hook names come from?
 
 They're generated directly from the WordPress core software and updated in time for each new release. They're bundled with this extension so there's no requirement for your project to include WordPress if you don't want to, and the extension doesn't scan the files in your project looking for actions and filters.
+
+## Sponsors
+
+Development of this extension is sponsored by:
+
+[![Automattic](images/sponsors/automattic.png?v=0.5.0)](https://automattic.com)
+
+Plus all my kind sponsors on GitHub:
+
+[![Sponsors](images/sponsors/sponsors.png?v=0.5.0)](https://github.com/sponsors/johnbillion)
+
+[Click here to find out about supporting this extension and my other WordPress development tools and plugins](https://github.com/sponsors/johnbillion).
 
 ## License
 
