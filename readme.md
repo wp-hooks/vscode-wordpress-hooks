@@ -60,11 +60,11 @@ They're generated directly from the WordPress core software and updated in time 
 
 Development of this extension is sponsored by:
 
-[![Automattic](images/sponsors/automattic.png?v=0.5.0)](https://automattic.com)
+[![Automattic](images/gh/automattic.png)](https://automattic.com)
 
 Plus all my kind sponsors on GitHub:
 
-[![Sponsors](images/sponsors/sponsors.png?v=0.5.0)](https://github.com/sponsors/johnbillion)
+[![Sponsors](images/gh/everyone.png)](https://github.com/sponsors/johnbillion)
 
 [Click here to find out about supporting this extension and my other WordPress development tools and plugins](https://github.com/sponsors/johnbillion).
 
