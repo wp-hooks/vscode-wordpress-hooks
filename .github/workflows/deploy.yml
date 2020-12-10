@@ -4,7 +4,7 @@ on:
     types: [published]
 
 env:
-	ENVIRONMENT_URL: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
+  ENVIRONMENT_URL: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
 
 jobs:
   vscodemarketplace:
