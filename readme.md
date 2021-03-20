@@ -3,7 +3,7 @@
 This extension provides intellisense and autocomplete for WordPress hooks, actions, and filters.
 
 * Autocomplete for action and filter names
-  - Supports all actions and filters up to WordPress 5.6
+  - Supports all actions and filters up to WordPress 5.7
 * Autocomplete for action and filter callback functions
   - Supports functions, class methods, closures, arrow functions, and more
   - The parameter types, return type, and a docblock are included where appropriate
