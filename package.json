@@ -92,6 +92,6 @@
 		"webpack-cli": "^3.3.12"
 	},
 	"dependencies": {
-		"@johnbillion/wp-hooks": "^0.5.4"
+		"@johnbillion/wp-hooks": "^0.6.1"
 	}
 }
