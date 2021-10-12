@@ -1,26 +1,26 @@
 {
-  "env": {
-    "browser": false
-  },
-  "extends": [
-    "airbnb-base"
-  ],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 2020,
-    "sourceType": "module"
-  },
-  "plugins": [
-    "@typescript-eslint"
-  ],
-  "rules": {
-    "indent": "off",
-    "import/prefer-default-export": "off",
-    "import/no-unresolved": "off",
-    "consistent-return": "off",
-    "no-restricted-syntax": "off",
-    "max-len":"off",
-    "no-tabs": "off",
-    "no-use-before-define": "off"
-  }
+	"env": {
+		"browser": false
+	},
+	"extends": [
+		"airbnb-base"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 2020,
+		"sourceType": "module"
+	},
+	"plugins": [
+		"@typescript-eslint"
+	],
+	"rules": {
+		"indent": "off",
+		"import/prefer-default-export": "off",
+		"import/no-unresolved": "off",
+		"consistent-return": "off",
+		"no-restricted-syntax": "off",
+		"max-len":"off",
+		"no-tabs": "off",
+		"no-use-before-define": "off"
+	}
 }
