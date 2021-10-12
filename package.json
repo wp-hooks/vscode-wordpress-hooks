@@ -69,6 +69,11 @@
 	},
 	"icon": "images/icon.png",
 	"main": "./out/extension.js",
+	"browser": "./out/extension.js",
+	"extensionKind": [
+		"workspace",
+		"ui"
+	],
 	"scripts": {
 		"lint": "eslint -c .eslintrc.json --ext .ts src",
 		"deploy": "vsce publish",
