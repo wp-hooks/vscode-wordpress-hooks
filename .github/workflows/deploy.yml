@@ -6,7 +6,7 @@ on:
     types: [published]
 
 env:
-  ENVIRONMENT_URL: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
+  VSCE_URL: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
 
 jobs:
   vscodemarketplace:
@@ -33,7 +33,7 @@ jobs:
           repository: ${{ github.repository }}
           deployment_id: ${{ fromJson( steps.deployment.outputs.data ).id }}
           state: pending
-          environment_url: ${{ env.ENVIRONMENT_URL }}
+          environment_url: ${{ env.VSCE_URL }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -59,7 +59,7 @@ jobs:
           repository: ${{ github.repository }}
           state: success
           deployment_id: ${{ fromJson( steps.deployment.outputs.data ).id }}
-          environment_url: ${{ env.ENVIRONMENT_URL }}
+          environment_url: ${{ env.VSCE_URL }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,7 +71,7 @@ jobs:
           repository: ${{ github.repository }}
           state: failure
           deployment_id: ${{ fromJson( steps.deployment.outputs.data ).id }}
-          environment_url: ${{ env.ENVIRONMENT_URL }}
+          environment_url: ${{ env.VSCE_URL }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
