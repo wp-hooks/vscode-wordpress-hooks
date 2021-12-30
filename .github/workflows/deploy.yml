@@ -14,10 +14,12 @@ jobs:
         include:
           - name: VS Code Marketplace
             url: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
-            command: deploy-vsce -- -p ${{ secrets.VSCE_TOKEN }}
+            command: deploy-vsce
+            token: VSCE
           - name: Open VSX Registry
             url: https://open-vsx.org/extension/johnbillion/vscode-wordpress-hooks
-            command: deploy-openvsx -- -p ${{ secrets.OVSX_TOKEN }}
+            command: deploy-openvsx
+            token: OVSX
     name: ${{ matrix.name }}
     steps:
       - uses: octokit/request-action@v2.x
@@ -56,7 +58,7 @@ jobs:
         run: npm ci
 
       - name: deploy
-        run: npm run ${{ matrix.command }}
+        run: npm run ${{ matrix.command }} -- -p ${{ secrets[format('{0}_TOKEN', matrix.token)] }}
 
       - name: Deployment Succeeded
         if: success()
