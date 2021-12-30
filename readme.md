@@ -58,7 +58,7 @@ They're generated directly from the WordPress core software and updated in time 
 
 ## Sponsors
 
-Development of this extension is sponsored by:
+The time that I spend maintaining this extension and other tools is in part sponsored by:
 
 [![Automattic](images/gh/automattic.png)](https://automattic.com)
 
