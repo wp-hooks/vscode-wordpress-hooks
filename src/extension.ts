@@ -338,7 +338,7 @@ export function activate(
 				const suffix = (params.length > 1 ? `, 10, ${params.length} ` : ' ');
 				let returnTypeString = '';
 
-				if (hook.type === 'filter') {
+				if (hook.type === 'filter' || hook.type === 'filter_reference') {
 					const returnType = getReturnType(params[0]);
 
 					if (returnType) {
