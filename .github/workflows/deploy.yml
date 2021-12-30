@@ -49,7 +49,7 @@ jobs:
         run: npm ci
 
       - name: deploy
-        run: npm run deploy -- -p ${{ secrets.VSCE_TOKEN }}
+        run: npm run deploy-vsce -- -p ${{ secrets.VSCE_TOKEN }}
 
       - name: Deployment Succeeded
         if: success()
