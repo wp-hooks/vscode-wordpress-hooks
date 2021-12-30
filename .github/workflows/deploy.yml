@@ -5,13 +5,20 @@ on:
   release:
     types: [published]
 
-env:
-  VSCE_URL: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
-
 jobs:
-  vscodemarketplace:
-    name: VS Code Marketplace
+  marketplaces:
     runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: VS Code Marketplace
+            url: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
+            command: deploy-vsce -- -p ${{ secrets.VSCE_TOKEN }}
+          - name: Open VSX Registry
+            url: https://open-vsx.org/extension/johnbillion/vscode-wordpress-hooks
+            command: deploy-openvsx -- -p ${{ secrets.OVSX_TOKEN }}
+    name: ${{ matrix.name }}
     steps:
       - uses: octokit/request-action@v2.x
         name: Create GitHub deployment
@@ -21,7 +28,7 @@ jobs:
           repository: ${{ github.repository }}
           ref: ${{ github.ref }}
           required_contexts: "[]"
-          environment: VS Code Marketplace
+          environment: ${{ matrix.name }}
           description: "Deploy version ${{ github.event.release.tag_name }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -33,7 +40,7 @@ jobs:
           repository: ${{ github.repository }}
           deployment_id: ${{ fromJson( steps.deployment.outputs.data ).id }}
           state: pending
-          environment_url: ${{ env.VSCE_URL }}
+          environment_url: ${{ matrix.url }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -49,7 +56,7 @@ jobs:
         run: npm ci
 
       - name: deploy
-        run: npm run deploy-vsce -- -p ${{ secrets.VSCE_TOKEN }}
+        run: npm run ${{ matrix.command }}
 
       - name: Deployment Succeeded
         if: success()
@@ -59,7 +66,7 @@ jobs:
           repository: ${{ github.repository }}
           state: success
           deployment_id: ${{ fromJson( steps.deployment.outputs.data ).id }}
-          environment_url: ${{ env.VSCE_URL }}
+          environment_url: ${{ matrix.url }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -71,7 +78,7 @@ jobs:
           repository: ${{ github.repository }}
           state: failure
           deployment_id: ${{ fromJson( steps.deployment.outputs.data ).id }}
-          environment_url: ${{ env.VSCE_URL }}
+          environment_url: ${{ matrix.url }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
