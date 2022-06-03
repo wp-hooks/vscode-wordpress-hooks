@@ -11,6 +11,10 @@ function getHookCompletion(
 	completion.detail = hook.doc.description;
 	completion.documentation = getHookDescription(hook);
 
+	if (hook.aliases) {
+		completion.filterText = hook.aliases.join(' ');
+	}
+
 	return completion;
 }
 
@@ -70,10 +74,30 @@ function isInFunctionDeclaration(
 function getHook(
 	name: string,
 ): Hook | void {
-	let hooks = filters.filter((filter) => filter.name === name);
+	let hooks = filters.filter((filter) => {
+		if (filter.name === name) {
+			return true;
+		}
+
+		if (filter.aliases?.includes(name)) {
+			return true;
+		}
+
+		return false;
+	});
 
 	if (hooks.length === 0) {
-		hooks = actions.filter((action) => action.name === name);
+		hooks = actions.filter((action) => {
+			if (action.name === name) {
+				return true;
+			}
+
+			if (action.aliases?.includes(name)) {
+				return true;
+			}
+
+			return false;
+		});
 	}
 
 	if (hooks.length) {
