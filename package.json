@@ -23,6 +23,9 @@
 		"actions",
 		"filters"
 	],
+	"sponsor": {
+		"url": "https://github.com/sponsors/johnbillion"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/johnbillion/vscode-wordpress-hooks.git"
