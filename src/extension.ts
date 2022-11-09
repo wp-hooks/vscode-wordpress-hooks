@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { hooks as actions } from '@johnbillion/wp-hooks/hooks/actions.json';
-import { hooks as filters } from '@johnbillion/wp-hooks/hooks/filters.json';
-import { Hook, Tag } from '@johnbillion/wp-hooks/interface';
+import { hooks as actions } from '@wp-hooks/wordpress-core/hooks/actions.json';
+import { hooks as filters } from '@wp-hooks/wordpress-core/hooks/filters.json';
+import { Hook, Tag } from '@wp-hooks/wordpress-core/interface';
 import * as meta from '../package.json';
 
 function getHookCompletion(

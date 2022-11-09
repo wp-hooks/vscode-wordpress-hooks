@@ -102,6 +102,6 @@
 		"webpack-cli": "^3.3.12"
 	},
 	"dependencies": {
-		"@johnbillion/wp-hooks": "^1.0.0"
+		"@wp-hooks/wordpress-core": "^1.0.0"
 	}
 }
