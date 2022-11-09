@@ -43,6 +43,7 @@ Hover information for an action or filter name looks like this:
 * `doing_action()`
 * `doing_filter()`
 * `did_action()`
+* `did_filter()`
 
 ### How can I trigger the autocomplete list if it doesn't show up?
 
