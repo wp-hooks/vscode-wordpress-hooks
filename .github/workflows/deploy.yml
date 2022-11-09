@@ -7,7 +7,7 @@ on:
 
 jobs:
   marketplaces:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -86,7 +86,7 @@ jobs:
 
   github:
     name: GitHub Milestones
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
     - name: Get next versions
       id: semvers
