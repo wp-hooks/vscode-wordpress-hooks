@@ -28,10 +28,10 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/johnbillion/vscode-wordpress-hooks.git"
+		"url": "https://github.com/wp-hooks/vscode-wordpress-hooks.git"
 	},
 	"bugs": {
-		"url": "https://github.com/johnbillion/vscode-wordpress-hooks/issues"
+		"url": "https://github.com/wp-hooks/vscode-wordpress-hooks/issues"
 	},
 	"activationEvents": [
 		"onLanguage:php"

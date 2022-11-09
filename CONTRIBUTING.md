@@ -1,6 +1,6 @@
 # Contributing to Autocomplete WordPress Hooks
 
-Code contributions, bug reports, and feedback are very welcome. These should be submitted through [the GitHub repository](https://github.com/johnbillion/vscode-wordpress-hooks).
+Code contributions, bug reports, and feedback are very welcome. These should be submitted through [the GitHub repository](https://github.com/wp-hooks/vscode-wordpress-hooks).
 
 * [Setting up Locally](#setting-up-locally)
 * [Releasing a New Version](#releasing-a-new-version)
@@ -30,10 +30,10 @@ These are the steps to take to release a new version of the extension (for contr
 
 ### Prior to Release
 
-1. Check [the milestone on GitHub](https://github.com/johnbillion/vscode-wordpress-hooks/milestones) for open issues or PRs. Fix or reassign as necessary.
+1. Check [the milestone on GitHub](https://github.com/wp-hooks/vscode-wordpress-hooks/milestones) for open issues or PRs. Fix or reassign as necessary.
 1. Ensure `readme.md` contains an up to date description, FAQs, screenshots, etc.
 1. Ensure `.vscodeignore` is up to date with all files that shouldn't be part of the build.
-1. Prepare a changelog for [the Releases page on GitHub](https://github.com/johnbillion/vscode-wordpress-hooks/releases).
+1. Prepare a changelog for [the Releases page on GitHub](https://github.com/wp-hooks/vscode-wordpress-hooks/releases).
    - The `git changelog -x` command from [Git Extras](https://github.com/tj/git-extras) is handy for this.
 
 ### For Release
@@ -49,7 +49,7 @@ These are the steps to take to release a new version of the extension (for contr
 1. `git push origin trunk`
 1. `git push origin trunk:master` (VS Marketplace uses images from the master branch)
 1. `git push origin --tags`
-1. Enter the changelog into [the release on GitHub](https://github.com/johnbillion/vscode-wordpress-hooks/releases) and publish it.
+1. Enter the changelog into [the release on GitHub](https://github.com/wp-hooks/vscode-wordpress-hooks/releases) and publish it.
 
 Publishing a release on GitHub triggers an action which deploys the release to the VS Marketplace. No need to touch `vsce`.
 

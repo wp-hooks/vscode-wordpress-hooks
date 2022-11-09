@@ -74,5 +74,5 @@ This extension is free and open source software. It's licensed under the GNU GPL
 
 ## Thanks
 
-* This extension uses the [wp-hooks library](https://github.com/johnbillion/wp-hooks) as the hook information provider.
+* This extension uses the [wp-hooks library](https://github.com/wp-hooks/wordpress-core) as the hook information provider.
 * This extension uses some code inspired by the [Autocomplete WordPress Hooks extension for Atom](https://github.com/joehoyle/atom-autocomplete-wordpress-hooks).
