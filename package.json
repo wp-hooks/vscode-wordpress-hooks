@@ -9,6 +9,7 @@
 		"name": "John Blackbourn"
 	},
 	"engines": {
+		"node": ">=16",
 		"vscode": "^1.39.0"
 	},
 	"categories": [

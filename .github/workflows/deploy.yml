@@ -6,83 +6,59 @@ on:
     types: [published]
 
 jobs:
-  marketplaces:
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: VS Code Marketplace
-            url: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
-            command: deploy-vsce
-            token: VSCE
-          - name: Open VSX Registry
-            url: https://open-vsx.org/extension/johnbillion/vscode-wordpress-hooks
-            command: deploy-openvsx
-            token: OVSX
-    name: ${{ matrix.name }}
     steps:
-      - uses: octokit/request-action@v2.x
-        name: Create GitHub deployment
-        id: deployment
-        with:
-          route: POST /repos/:repository/deployments
-          repository: ${{ github.repository }}
-          ref: ${{ github.ref }}
-          required_contexts: "[]"
-          environment: ${{ matrix.name }}
-          description: "Deploy version ${{ github.event.release.tag_name }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: octokit/request-action@v2.x
-        name: Set GitHub deployment status
-        with:
-          route: POST /repos/:repository/deployments/:deployment_id/statuses
-          repository: ${{ github.repository }}
-          deployment_id: ${{ fromJson( steps.deployment.outputs.data ).id }}
-          state: pending
-          environment_url: ${{ matrix.url }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: '12.x'
+          node-version-file: '.nvmrc'
+          cache: npm
 
       - name: clean install dependencies
         run: npm ci
 
+      - name: upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: .
+
+  vsce:
+    name: VS Code Marketplace
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: VS Code Marketplace
+      url: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
+    steps:
+      - name: download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+
       - name: deploy
-        run: npm run ${{ matrix.command }} -- -p ${{ secrets[format('{0}_TOKEN', matrix.token)] }}
+        run: npm run deploy-vsce -- -p ${{ secrets.VSCE_TOKEN }}
 
-      - name: Deployment Succeeded
-        if: success()
-        uses: octokit/request-action@v2.x
+  openvsx:
+    name: Open VSX
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: Open VSX Registry
+      url: https://open-vsx.org/extension/johnbillion/vscode-wordpress-hooks
+    steps:
+      - name: download artifact from build job
+        uses: actions/download-artifact@v3
         with:
-          route: POST /repos/:repository/deployments/:deployment_id/statuses
-          repository: ${{ github.repository }}
-          state: success
-          deployment_id: ${{ fromJson( steps.deployment.outputs.data ).id }}
-          environment_url: ${{ matrix.url }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: build
 
-      - name: Deployment Failed
-        if: failure()
-        uses: octokit/request-action@v2.x
-        with:
-          route: POST /repos/:repository/deployments/:deployment_id/statuses
-          repository: ${{ github.repository }}
-          state: failure
-          deployment_id: ${{ fromJson( steps.deployment.outputs.data ).id }}
-          environment_url: ${{ matrix.url }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: deploy
+        run: npm run deploy-openvsx -- -p ${{ secrets.OVSX_TOKEN }}
 
   github:
     name: GitHub Milestones
