@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import { hooks as actions } from '@wp-hooks/wordpress-core/hooks/actions.json';
 import { hooks as filters } from '@wp-hooks/wordpress-core/hooks/filters.json';
 import { Hook, Tag } from '@wp-hooks/wordpress-core/interface';
-import * as meta from '../package.json';
+
+const extensionName = 'vscode-wordpress-hooks';
 
 function getHookCompletion(
 	hook: Hook,
@@ -215,8 +216,8 @@ function getReturnType(
 }
 
 function getMinPHPVersion() : number {
-	const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration(meta.name).get('typeDeclarations.enable') ?? true;
-	const typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration(meta.name).get('typeDeclarations.olderPhpVersionSupport') ?? '';
+	const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration(extensionName).get('typeDeclarations.enable') ?? true;
+	const typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration(extensionName).get('typeDeclarations.olderPhpVersionSupport') ?? '';
 
 	if (!typeDeclarationsEnabled) {
 		return 0;
@@ -386,7 +387,7 @@ export function activate(
 
 				docblockLines.push(' */');
 
-				const docBlocksEnabled: boolean = vscode.workspace.getConfiguration(meta.name).get('docBlocks.enable') ?? true;
+				const docBlocksEnabled: boolean = vscode.workspace.getConfiguration(extensionName).get('docBlocks.enable') ?? true;
 				const lineLeadingMatch = document.lineAt(position).text.match(/^[\s]+/);
 				const lineLeadingWhitespace = lineLeadingMatch ? lineLeadingMatch[0] : '';
 

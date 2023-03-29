@@ -73,7 +73,6 @@
 	},
 	"icon": "images/icon.png",
 	"main": "./out/extension.js",
-	"browser": "./out/extension.js",
 	"extensionKind": [
 		"workspace",
 		"ui"
@@ -82,10 +81,9 @@
 		"lint": "eslint -c .eslintrc.json --ext .ts src",
 		"deploy-vsce": "vsce publish",
 		"deploy-openvsx": "ovsx publish",
-		"vscode:prepublish": "webpack --mode production",
-		"webpack": "webpack --mode development",
-		"webpack-dev": "webpack --mode development --watch",
-		"test-compile": "tsc -p ./"
+		"vscode:prepublish": "npm run build",
+		"watch": "tsc --watch",
+		"build": "tsc"
 	},
 	"devDependencies": {
 		"@types/node": "^18",
@@ -96,11 +94,8 @@
 		"eslint-config-airbnb-base": "^15",
 		"eslint-plugin-import": "^2",
 		"ovsx": "^0.8.0",
-		"ts-loader": "^9",
 		"typescript": "^5",
-		"vsce": "^2",
-		"webpack": "^5",
-		"webpack-cli": "^5"
+		"vsce": "^2"
 	},
 	"dependencies": {
 		"@wp-hooks/wordpress-core": "^1.0.0"
