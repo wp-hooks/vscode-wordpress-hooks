@@ -26,3 +26,6 @@ jobs:
 
     - name: Run Linting
       run: npm run lint
+
+    - name: Run the build
+      run: npm run build
