@@ -13,11 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v1
+      uses: actions/checkout@v3
+
+    - name: setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+        cache: npm
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
     - name: Run Linting
-      run: |
-        npm run lint
+      run: npm run lint
