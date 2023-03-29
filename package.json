@@ -88,19 +88,19 @@
 		"test-compile": "tsc -p ./"
 	},
 	"devDependencies": {
-		"@types/node": "^10.17.0",
-		"@types/vscode": "^1.32.0",
-		"@typescript-eslint/eslint-plugin": "^4.0.1",
-		"@typescript-eslint/parser": "^4.0.1",
-		"eslint": "^7.8.1",
-		"eslint-config-airbnb-base": "^14.2.0",
-		"eslint-plugin-import": "^2.22.0",
-		"ovsx": "^0.2.1",
-		"ts-loader": "^8.0.0",
-		"typescript": "^3.9",
-		"vsce": "^2.14.0",
-		"webpack": "^4.43.0",
-		"webpack-cli": "^3.3.12"
+		"@types/node": "^18",
+		"@types/vscode": "^1",
+		"@typescript-eslint/eslint-plugin": "^5",
+		"@typescript-eslint/parser": "^5",
+		"eslint": "^8",
+		"eslint-config-airbnb-base": "^15",
+		"eslint-plugin-import": "^2",
+		"ovsx": "^0.8.0",
+		"ts-loader": "^9",
+		"typescript": "^5",
+		"vsce": "^2",
+		"webpack": "^5",
+		"webpack-cli": "^5"
 	},
 	"dependencies": {
 		"@wp-hooks/wordpress-core": "^1.0.0"
