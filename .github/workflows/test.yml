@@ -11,6 +11,7 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     name: Linter
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3

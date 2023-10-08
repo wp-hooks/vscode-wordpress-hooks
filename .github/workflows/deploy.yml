@@ -9,6 +9,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
@@ -31,6 +32,7 @@ jobs:
   vsce:
     name: VS Code Marketplace
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: build
     environment:
       name: VS Code Marketplace
@@ -47,6 +49,7 @@ jobs:
   openvsx:
     name: Open VSX
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: build
     environment:
       name: Open VSX Registry
@@ -63,6 +66,7 @@ jobs:
   github:
     name: GitHub Milestones
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
     - name: Get next versions
       id: semvers
