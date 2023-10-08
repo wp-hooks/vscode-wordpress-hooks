@@ -13,6 +13,8 @@ jobs:
     environment:
       name: VS Code Marketplace
       url: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
@@ -27,7 +29,7 @@ jobs:
         run: npm ci
 
       - name: deploy
-        run: npm run deploy-vsce -- -p ${{ secrets.VSCE_TOKEN }}
+        run: npm run deploy-vsce
 
   openvsx:
     name: Open VSX
@@ -36,6 +38,8 @@ jobs:
     environment:
       name: Open VSX Registry
       url: https://open-vsx.org/extension/johnbillion/vscode-wordpress-hooks
+    env:
+      OVSX_PAT: ${{ secrets.OVSX_TOKEN }}
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
@@ -50,7 +54,7 @@ jobs:
         run: npm ci
 
       - name: deploy
-        run: npm run deploy-openvsx -- -p ${{ secrets.OVSX_TOKEN }}
+        run: npm run deploy-openvsx
 
   github:
     name: GitHub Milestones
