@@ -6,10 +6,13 @@ on:
     types: [published]
 
 jobs:
-  build:
-    name: Build
+  vsce:
+    name: VS Code Marketplace
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment:
+      name: VS Code Marketplace
+      url: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
     steps:
       - name: checkout repo
         uses: actions/checkout@v3
@@ -23,26 +26,6 @@ jobs:
       - name: clean install dependencies
         run: npm ci
 
-      - name: upload artifact for deployment job
-        uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: .
-
-  vsce:
-    name: VS Code Marketplace
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: build
-    environment:
-      name: VS Code Marketplace
-      url: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
-    steps:
-      - name: download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-
       - name: deploy
         run: npm run deploy-vsce -- -p ${{ secrets.VSCE_TOKEN }}
 
@@ -50,15 +33,21 @@ jobs:
     name: Open VSX
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: build
     environment:
       name: Open VSX Registry
       url: https://open-vsx.org/extension/johnbillion/vscode-wordpress-hooks
     steps:
-      - name: download artifact from build job
-        uses: actions/download-artifact@v3
+      - name: checkout repo
+        uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v3
         with:
-          name: build
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: clean install dependencies
+        run: npm ci
 
       - name: deploy
         run: npm run deploy-openvsx -- -p ${{ secrets.OVSX_TOKEN }}
