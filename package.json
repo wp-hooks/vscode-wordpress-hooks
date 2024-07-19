@@ -98,6 +98,6 @@
 		"vsce": "^2"
 	},
 	"dependencies": {
-		"@wp-hooks/wordpress-core": "^1.6.0"
+		"@wp-hooks/wordpress-core": "^1.8.0"
 	}
 }
