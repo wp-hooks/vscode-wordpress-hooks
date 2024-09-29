@@ -1,4 +1,4 @@
-# Contributing to Autocomplete WordPress Hooks
+# Contributing to this extension
 
 Code contributions, bug reports, and feedback are very welcome. These should be submitted through [the GitHub repository](https://github.com/wp-hooks/vscode-wordpress-hooks).
 

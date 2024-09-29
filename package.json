@@ -1,6 +1,6 @@
 {
 	"name": "vscode-wordpress-hooks",
-	"displayName": "WordPress Hooks IntelliSense",
+	"displayName": "Hooks IntelliSense for WordPress",
 	"description": "IntelliSense and autocompletion for WordPress hooks, actions, and filters",
 	"version": "1.4.0",
 	"license": "GPL-3.0-or-later",
@@ -40,7 +40,7 @@
 	"contributes": {
 		"configuration": [
 			{
-				"title": "WordPress Hooks IntelliSense",
+				"title": "Hooks IntelliSense for WordPress",
 				"properties": {
 					"vscode-wordpress-hooks.docBlocks.enable": {
 						"type": "boolean",

@@ -1,6 +1,6 @@
-# WordPress Hooks Intellisense for VS Code
+# Hooks IntelliSense for WordPress
 
-This extension provides intellisense and autocomplete for WordPress hooks, actions, and filters.
+This VS Code extension provides IntelliSense and autocomplete for WordPress hooks, actions, and filters.
 
 * Autocomplete for action and filter names
   - Supports all actions and filters up to WordPress 6.6
@@ -10,7 +10,6 @@ This extension provides intellisense and autocomplete for WordPress hooks, actio
   - Various options can be controlled in the settings for the extension
 * Hover information on action and filter names
   - Includes a useful link to the developer.wordpress.org documentation site
-
 
 ## Usage
 
@@ -51,7 +50,7 @@ Place your cursor within the first parameter of one of the supported functions, 
 
 ### Can I disable or adjust the type declarations / type hints / docblock?
 
-Yes, open the preferences for VS Code and go to the **Extensions -> WordPress Hooks Intellisense** section.
+Yes, open the preferences for VS Code and go to the **Extensions -> Hooks IntelliSense for WordPress** section.
 
 ### Where does the list of hook names come from?
 
