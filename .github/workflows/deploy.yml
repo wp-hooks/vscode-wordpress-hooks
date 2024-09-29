@@ -59,40 +59,27 @@ jobs:
   github:
     name: GitHub Milestones
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     timeout-minutes: 10
     steps:
     - name: Get next versions
       id: semvers
-      uses: WyriHaximus/github-action-next-semvers@v1.0
+      uses: WyriHaximus/github-action-next-semvers@v1.2.1
       with:
         version: ${{ github.event.release.tag_name }}
 
     - name: Create next patch milestone
-      uses: octokit/request-action@v2.x
-      with:
-        route: POST /repos/:repository/milestones
-        repository: ${{ github.repository }}
-        title: ${{ steps.semvers.outputs.patch }}
+      run: gh api "/repos/${{ github.repository }}/milestones" --field "title=${{ steps.semvers.outputs.patch }}" || true
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Create next minor milestone
-      uses: octokit/request-action@v2.x
-      with:
-        route: POST /repos/:repository/milestones
-        repository: ${{ github.repository }}
-        title: ${{ steps.semvers.outputs.minor }}
+      run: gh api "/repos/${{ github.repository }}/milestones" --field "title=${{ steps.semvers.outputs.minor }}" || true
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Create next major milestone
-      uses: octokit/request-action@v2.x
-      with:
-        route: POST /repos/:repository/milestones
-        repository: ${{ github.repository }}
-        title: ${{ steps.semvers.outputs.major }}
+      run: gh api "/repos/${{ github.repository }}/milestones" --field "title=${{ steps.semvers.outputs.major }}" || true
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true
+        GITHUB_TOKEN: ${{ github.token }}
