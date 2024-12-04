@@ -114,8 +114,6 @@ interface tagType {
 function getTagType(
 	tag: Tag,
 ): tagType | null {
-	const typeDeclarationsSupport = getMinPHPVersion();
-
 	// https://www.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration
 	const allowedTypes: { [key: string]: number } = {
 		self: 5.0,
@@ -134,11 +132,6 @@ function getTagType(
 		nullable: false,
 	};
 
-	// Type declarations disabled? Bail.
-	if (!typeDeclarationsSupport) {
-		return null;
-	}
-
 	// No type info? Bail.
 	if (!tag.types) {
 		return null;
@@ -147,7 +140,7 @@ function getTagType(
 	const types = [...tag.types];
 
 	// Handle nullable type.
-	if (types.length === 2 && typeDeclarationsSupport >= 7.1) {
+	if (types.length === 2) {
 		if (types[0] === 'null') {
 			types.splice(0, 1);
 			typeData.nullable = true;
@@ -195,7 +188,7 @@ function getTagType(
 	}
 
 	// Check the allowed types, ignoring unknown types such as class and interface names.
-	if (allowedTypes[type] && (allowedTypes[type] > typeDeclarationsSupport)) {
+	if (allowedTypes[type]) {
 		return null;
 	}
 
@@ -207,27 +200,7 @@ function getTagType(
 function getReturnType(
 	tag: Tag,
 ) : tagType | null {
-	// Return type declarations require PHP 7 or higher.
-	if (getMinPHPVersion() < 7) {
-		return null;
-	}
-
 	return getTagType(tag);
-}
-
-function getMinPHPVersion() : number {
-	const typeDeclarationsEnabled: boolean = vscode.workspace.getConfiguration(extensionName).get('typeDeclarations.enable') ?? true;
-	const typeDeclarationsSupportSetting: string = vscode.workspace.getConfiguration(extensionName).get('typeDeclarations.olderPhpVersionSupport') ?? '';
-
-	if (!typeDeclarationsEnabled) {
-		return 0;
-	}
-
-	if (!typeDeclarationsSupportSetting || typeDeclarationsSupportSetting === 'None') {
-		return 999;
-	}
-
-	return parseFloat(typeDeclarationsSupportSetting);
 }
 
 interface contextualPosition {
@@ -380,9 +353,8 @@ export function activate(
 					docblockLines.push(` * @return ${params[0].types?.join('|') || ''} ${params[0].content}`);
 				} else {
 					const actionArgsString = snippetArgsString ? ` ${snippetArgsString} ` : '';
-					returnTypeString = (getMinPHPVersion() >= 7.1) ? ' : void' : '';
-					snippetCallback = `(${actionArgsString})${returnTypeString} {\n\t\${1}\n}`;
-					documentationCallback = `(${docArgsString})${returnTypeString} {\n}`;
+					snippetCallback = `(${actionArgsString}) : void {\n\t\${1}\n}`;
+					documentationCallback = `(${docArgsString}) : void {\n}`;
 				}
 
 				docblockLines.push(' */');
