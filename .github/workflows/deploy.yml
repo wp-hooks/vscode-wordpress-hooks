@@ -17,10 +17,10 @@ jobs:
       VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
     steps:
       - name: checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -42,10 +42,10 @@ jobs:
       OVSX_PAT: ${{ secrets.OVSX_TOKEN }}
     steps:
       - name: checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
           cache: npm
