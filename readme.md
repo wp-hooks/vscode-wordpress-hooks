@@ -58,15 +58,17 @@ They're generated directly from the WordPress core software and updated in time 
 
 ## Sponsors
 
-The time that I spend maintaining this extension and other tools is in part sponsored by:
+<p align="center">The time that I spend maintaining this extension and others is in part sponsored by:</p>
 
-[![Automattic](https://cdn.jsdelivr.net/gh/johnbillion/johnbillion/assets/sponsors/automattic.png)](https://automattic.com)
+<p align="center"><a href="https://automattic.com"><img src="https://cdn.jsdelivr.net/gh/johnbillion/johnbillion@latest/assets/sponsors/automattic.svg" alt="Automattic" width="50%"></a></p>
 
-Plus all my kind sponsors on GitHub:
+<p align="center"><a href="https://servmask.com"><img src="https://cdn.jsdelivr.net/gh/johnbillion/johnbillion@latest/assets/sponsors/servmask.svg" alt="ServMask" width="25%"></a></p>
 
-[![Sponsors](https://cdn.jsdelivr.net/gh/johnbillion/johnbillion/sponsors.svg)](https://github.com/sponsors/johnbillion)
+<p align="center">Plus all my kind sponsors on GitHub:</p>
 
-[Click here to find out about supporting this extension and my other WordPress development tools and plugins](https://github.com/sponsors/johnbillion).
+<p align="center"><a href="https://github.com/sponsors/johnbillion"><img src="https://cdn.jsdelivr.net/gh/johnbillion/johnbillion@latest/sponsors.svg" alt="Sponsors"></p>
+
+<p align="center"><a href="https://github.com/sponsors/johnbillion">Click here to find out about supporting my open source tools and plugins</a>.</p>
 
 ## License
 
