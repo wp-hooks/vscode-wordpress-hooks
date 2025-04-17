@@ -2,7 +2,7 @@
 	"name": "vscode-wordpress-hooks",
 	"displayName": "Hooks IntelliSense for WordPress",
 	"description": "IntelliSense and autocompletion for WordPress hooks, actions, and filters",
-	"version": "1.5.0",
+	"version": "1.6.0",
 	"license": "GPL-3.0-or-later",
 	"publisher": "johnbillion",
 	"author": {
