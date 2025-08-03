@@ -69,7 +69,6 @@
 	"scripts": {
 		"lint": "eslint -c .eslintrc.json --ext .ts src",
 		"deploy-vsce": "vsce publish",
-		"deploy-openvsx": "ovsx publish",
 		"vscode:prepublish": "npm run build",
 		"watch": "tsc --watch",
 		"build": "tsc"
@@ -83,7 +82,6 @@
 		"eslint": "^8",
 		"eslint-config-airbnb-base": "^15",
 		"eslint-plugin-import": "^2",
-		"ovsx": "^0.8.0",
 		"typescript": "^5"
 	},
 	"dependencies": {
