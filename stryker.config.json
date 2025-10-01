@@ -1,0 +1,34 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "packageManager": "npm",
+  "reporters": ["html", "clear-text", "progress"],
+  "testRunner": "mocha",
+  "buildCommand": "npm run build",
+  "coverageAnalysis": "off",
+  "mochaOptions": {
+    "spec": ["out/test/unit/**/*.test.js"],
+    "ui": "tdd"
+  },
+  "mutate": [
+    "src/core/**/*.ts",
+    "!src/**/*.test.ts"
+  ],
+  "files": [
+    "src/**/*.ts",
+    "package.json",
+    "tsconfig.json",
+    "node_modules/@wp-hooks/**/*"
+  ],
+  "timeoutMS": 60000,
+  "thresholds": {
+    "high": 80,
+    "low": 60,
+    "break": 50
+  },
+  "ignorePatterns": [
+    ".vscode-test"
+  ],
+  "disableTypeChecks": "**/*.{js,ts,jsx,tsx,html,vue}",
+  "tempDirName": ".stryker-tmp",
+  "cleanTempDir": true
+}

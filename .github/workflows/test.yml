@@ -33,3 +33,6 @@ jobs:
 
     - name: Run tests
       run: xvfb-run -a npm test
+
+    - name: Run mutation testing
+      run: npm run test:mutation

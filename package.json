@@ -73,9 +73,14 @@
 		"watch": "tsc --watch",
 		"build": "tsc",
 		"pretest": "npm run build",
-		"test": "vscode-test"
+		"test": "vscode-test",
+		"test:unit": "mocha --config .mocharc.unit.json",
+		"test:mutation": "stryker run"
 	},
 	"devDependencies": {
+		"@stryker-mutator/core": "^9.1.1",
+		"@stryker-mutator/mocha-runner": "^9.1.1",
+		"@stryker-mutator/typescript-checker": "^9.1.1",
 		"@types/glob": "^8.1.0",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^20",
