@@ -17,10 +17,22 @@
 		"indent": "off",
 		"import/prefer-default-export": "off",
 		"import/no-unresolved": "off",
+		"import/extensions": "off",
 		"consistent-return": "off",
 		"no-restricted-syntax": "off",
 		"max-len":"off",
 		"no-tabs": "off",
 		"no-use-before-define": "off"
-	}
+	},
+	"overrides": [
+		{
+			"files": ["src/test/**/*.ts"],
+			"env": {
+				"mocha": true
+			},
+			"rules": {
+				"no-promise-executor-return": "off"
+			}
+		}
+	]
 }

@@ -1,9 +1,9 @@
-import { Tag } from '../types';
+import { Tag } from '../types/index.js';
 
 export function generateDocblockLines(
 	description: string,
 	params: Tag[],
-	returnParam?: Tag
+	returnParam?: Tag,
 ): string[] {
 	const docblockLines = [
 		'/**',

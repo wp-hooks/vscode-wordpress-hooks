@@ -1,14 +1,14 @@
 import * as vscode from 'vscode';
-import { Hook } from '../types';
-import { getHook } from '../utils/hookHelpers';
-import { isInFunctionDeclaration } from '../utils/matchers';
-import { getContainingSymbol } from '../utils/symbolHelpers';
-import { generateDocblockLines } from '../generators/docblockGenerator';
+import { Hook } from '../types/index.js';
+import { getHook } from '../utils/hookHelpers.js';
+import { isInFunctionDeclaration } from '../utils/matchers.js';
+import { getContainingSymbol } from '../utils/symbolHelpers.js';
+import { generateDocblockLines } from '../generators/docblockGenerator.js';
 import {
 	generateCallbackSnippet,
 	WORDPRESS_UTILITY_SNIPPETS,
-	SNIPPET_TYPES
-} from '../generators/snippetGenerator';
+	SNIPPET_TYPES,
+} from '../generators/snippetGenerator.js';
 
 const extensionName = 'vscode-wordpress-hooks';
 
@@ -20,7 +20,7 @@ function createClosureCompletion(
 	suffix: string,
 	lineLeadingWhitespace: string,
 	position: vscode.Position,
-	docBlocksEnabled: boolean
+	docBlocksEnabled: boolean,
 ): vscode.CompletionItem {
 	const completionItemForClosure = new vscode.CompletionItem('Closure', vscode.CompletionItemKind.Function);
 	completionItemForClosure.insertText = new vscode.SnippetString(`function${snippetCallback}${suffix}`);
@@ -46,7 +46,7 @@ function createArrowFunctionCompletion(
 	docblockLines: string[],
 	lineLeadingWhitespace: string,
 	position: vscode.Position,
-	docBlocksEnabled: boolean
+	docBlocksEnabled: boolean,
 ): vscode.CompletionItem {
 	const completionItemForArrow = new vscode.CompletionItem('Arrow function', vscode.CompletionItemKind.Function);
 
@@ -67,7 +67,7 @@ function createArrowFunctionCompletion(
 }
 
 function createUtilityFunctionCompletions(
-	params: Array<{ types?: string[] }>
+	params: Array<{ types?: string[] }>,
 ): vscode.CompletionItem[] {
 	const completions: vscode.CompletionItem[] = [];
 
@@ -120,7 +120,7 @@ function createFunctionCompletion(
 	docblockLines: string[],
 	leadingWhitespace: string,
 	insertionPosition: vscode.Position,
-	docBlocksEnabled: boolean
+	docBlocksEnabled: boolean,
 ): vscode.CompletionItem {
 	const functionName = `${hook.type}_${hook.name.replace(/[^a-z_]/g, '')}`;
 	const completionItemForFunction = new vscode.CompletionItem('Function', vscode.CompletionItemKind.Function);
@@ -156,7 +156,7 @@ function createMethodCompletion(
 	docblockLines: string[],
 	leadingWhitespace: string,
 	methodInsertionPosition: vscode.Position,
-	docBlocksEnabled: boolean
+	docBlocksEnabled: boolean,
 ): vscode.CompletionItem {
 	const functionName = `${hook.type}_${hook.name.replace(/[^a-z_]/g, '')}`;
 	const completionItemForMethod = new vscode.CompletionItem('Class method', vscode.CompletionItemKind.Method);
@@ -209,7 +209,9 @@ export function createCallbackCompletionProvider(): vscode.Disposable {
 				const params = hook.doc.tags.filter((tag) => tag.name === 'param');
 
 				// Generate callback snippet
-				const { snippetCallback, documentationCallback, returnTypeString, suffix } = generateCallbackSnippet(hook.type, params);
+				const {
+ snippetCallback, documentationCallback, returnTypeString, suffix,
+} = generateCallbackSnippet(hook.type, params);
 				const snippetArgsString = params.map((param) => `\\${param.variable}`).join(', ');
 				const docArgsString = snippetArgsString.replace(/\\\$/g, '$');
 
@@ -230,7 +232,7 @@ export function createCallbackCompletionProvider(): vscode.Disposable {
 					suffix,
 					lineLeadingWhitespace,
 					position,
-					docBlocksEnabled
+					docBlocksEnabled,
 				));
 
 				// Add arrow function and utility functions for filters
@@ -244,7 +246,7 @@ export function createCallbackCompletionProvider(): vscode.Disposable {
 						docblockLines,
 						lineLeadingWhitespace,
 						position,
-						docBlocksEnabled
+						docBlocksEnabled,
 					));
 
 					completions.push(...createUtilityFunctionCompletions(params));
@@ -258,7 +260,7 @@ export function createCallbackCompletionProvider(): vscode.Disposable {
 							vscode.window.activeTextEditor.document.uri,
 						)
 						.then((symbols) => {
-							let insertionPosition = document.lineAt(position.line).range.end;
+							const insertionPosition = document.lineAt(position.line).range.end;
 
 							if (symbols === undefined) {
 								completions.push(createFunctionCompletion(
@@ -268,7 +270,7 @@ export function createCallbackCompletionProvider(): vscode.Disposable {
 									docblockLines,
 									'',
 									insertionPosition,
-									docBlocksEnabled
+									docBlocksEnabled,
 								));
 								return completions;
 							}
@@ -292,7 +294,7 @@ export function createCallbackCompletionProvider(): vscode.Disposable {
 									docblockLines,
 									leadingWhitespace,
 									positionContext.symbol.range.end,
-									docBlocksEnabled
+									docBlocksEnabled,
 								));
 							} else {
 								const functionName = `${hook.type}_${hook.name.replace(/[^a-z_]/g, '')}`;
@@ -303,7 +305,7 @@ export function createCallbackCompletionProvider(): vscode.Disposable {
 									docblockLines,
 									leadingWhitespace,
 									positionContext.symbol ? positionContext.symbol.range.end : insertionPosition,
-									docBlocksEnabled
+									docBlocksEnabled,
 								);
 
 								if (positionContext.inNamespace) {

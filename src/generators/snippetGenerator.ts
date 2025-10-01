@@ -1,5 +1,5 @@
-import { Tag } from '../types';
-import { getTagType, getReturnType } from '../utils/typeHelpers';
+import { Tag } from '../types/index.js';
+import { getTagType, getReturnType } from '../utils/typeHelpers.js';
 
 export interface CallbackSnippet {
 	snippetCallback: string;
@@ -10,7 +10,7 @@ export interface CallbackSnippet {
 
 export function generateCallbackSnippet(
 	hookType: string,
-	params: Tag[]
+	params: Tag[],
 ): CallbackSnippet {
 	const snippetArgsString = params.map((param) => {
 		const val = `\\${param.variable}`;
@@ -57,7 +57,7 @@ export function generateCallbackSnippet(
 		snippetCallback,
 		documentationCallback,
 		returnTypeString,
-		suffix
+		suffix,
 	};
 }
 

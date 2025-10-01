@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { createHookCompletionProvider } from './providers/hookCompletionProvider';
-import { createCallbackCompletionProvider } from './providers/callbackCompletionProvider';
-import { createHoverProvider } from './providers/hoverProvider';
+import { createHookCompletionProvider } from './providers/hookCompletionProvider.js';
+import { createCallbackCompletionProvider } from './providers/callbackCompletionProvider.js';
+import { createHoverProvider } from './providers/hoverProvider.js';
 
 export function activate(
 	context: vscode.ExtensionContext,
