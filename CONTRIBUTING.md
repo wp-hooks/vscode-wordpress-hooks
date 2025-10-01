@@ -22,7 +22,26 @@ You can clone this repo and then run the extension in development mode in VS Cod
 
 2. Open the directory in VS Code and launch the extension from the `Run` panel.
 
-The extension source code can be found in `src/extension.ts`.
+The extension source code is in the `src/` directory with the following structure:
+- `src/extension.ts` - Entry point
+- `src/providers/` - Completion and hover providers
+- `src/utils/` - Helper functions for hooks, types, and matchers
+- `src/generators/` - Code generation for docblocks and snippets
+- `src/types/` - TypeScript interfaces
+
+### Running Tests
+
+Run the test suite:
+
+```bash
+npm test
+```
+
+This runs all tests in a headless VS Code instance. Tests are located in `src/test/suite/` and cover:
+- Hook completion (actions and filters)
+- Callback completion (closures, arrow functions, utility functions)
+- Hover provider functionality
+- Edge cases and various hook functions
 
 ## Releasing a New Version
 
@@ -31,6 +50,7 @@ These are the steps to take to release a new version of the extension (for contr
 ### Prior to Release
 
 1. Check [the milestone on GitHub](https://github.com/wp-hooks/vscode-wordpress-hooks/milestones) for open issues or PRs. Fix or reassign as necessary.
+1. Run `npm test` to ensure all tests pass.
 1. Ensure `readme.md` contains an up to date description, FAQs, screenshots, etc.
 1. Ensure `.vscodeignore` is up to date with all files that shouldn't be part of the build.
 1. Prepare a changelog for [the Releases page on GitHub](https://github.com/wp-hooks/vscode-wordpress-hooks/releases).

@@ -6,5 +6,7 @@
 **/*.ts
 images/screenshot*
 src/**
+out/test/**
 test/**
+.vscode-test.mjs
 tsconfig.json
