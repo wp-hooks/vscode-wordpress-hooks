@@ -4,67 +4,75 @@ import * as vscode from 'vscode';
 suite('Hook Completion Test Suite', () => {
 	vscode.window.showInformationMessage('Start hook completion tests.');
 
-	test('Should provide autocomplete for add_action', async () => {
-		// Create a PHP document with content that triggers our completion provider
-		const content = "<?php\nadd_action('";
-		const doc = await vscode.workspace.openTextDocument({
-			language: 'php',
-			content,
+	const actionFunctions = ['add_action', 'remove_action', 'has_action', 'doing_action', 'did_action'];
+	const filterFunctions = ['add_filter', 'remove_filter', 'has_filter', 'doing_filter'];
+
+	const testVariations = [
+		{ quote: "'", whitespace: '', description: 'single quotes' },
+		{ quote: '"', whitespace: '', description: 'double quotes' },
+		{ quote: "'", whitespace: '   ', description: 'extra whitespace' },
+	];
+
+	actionFunctions.forEach((fn) => {
+		testVariations.forEach(({ quote, whitespace, description }) => {
+			test(`Should provide action completions for ${fn} with ${description}`, async () => {
+				const ws = whitespace || '';
+				const doc = await vscode.workspace.openTextDocument({
+					language: 'php',
+					content: `<?php\n${fn}(${ws}${quote}`,
+				});
+
+				await vscode.window.showTextDocument(doc);
+				await new Promise((resolve) => setTimeout(resolve, 100));
+
+				// Position is after the opening quote
+				const pos = fn.length + 1 + ws.length + 1;
+				const position = new vscode.Position(1, pos);
+
+				const completions = await vscode.commands.executeCommand<vscode.CompletionList>(
+					'vscode.executeCompletionItemProvider',
+					doc.uri,
+					position,
+				);
+
+				assert.ok(completions, 'Completions should be returned');
+				assert.ok(completions.items.length > 0, 'Should have completion items');
+
+				const labels = completions.items.map((item) => (typeof item.label === 'string' ? item.label : item.label.label));
+				assert.ok(labels.includes('init'), `Should include init hook for ${fn}`);
+			});
 		});
-
-		await vscode.window.showTextDocument(doc);
-
-		// Wait a bit for extension to activate
-		await new Promise((resolve) => setTimeout(resolve, 100));
-
-		// Position is right after the opening quote
-		const position = new vscode.Position(1, 12);
-
-		// Execute the completion provider
-		const completions = await vscode.commands.executeCommand<vscode.CompletionList>(
-			'vscode.executeCompletionItemProvider',
-			doc.uri,
-			position,
-		);
-
-		assert.ok(completions, 'Completions should be returned');
-		assert.ok(completions.items.length > 0, 'Should have completion items');
-
-		// Check that we have WordPress actions
-		const labels = completions.items.map((item) => (typeof item.label === 'string' ? item.label : item.label.label));
-
-		// Should have "init" action
-		assert.ok(
-			labels.includes('init'),
-			`Should include "init" action. Got ${labels.length} items, first 10: ${labels.slice(0, 10).join(', ')}`,
-		);
 	});
 
-	test('Should provide autocomplete for add_filter', async () => {
-		const doc = await vscode.workspace.openTextDocument({
-			language: 'php',
-			content: "<?php\nadd_filter('",
+	filterFunctions.forEach((fn) => {
+		testVariations.forEach(({ quote, whitespace, description }) => {
+			test(`Should provide filter completions for ${fn} with ${description}`, async () => {
+				const ws = whitespace || '';
+				const doc = await vscode.workspace.openTextDocument({
+					language: 'php',
+					content: `<?php\n${fn}(${ws}${quote}`,
+				});
+
+				await vscode.window.showTextDocument(doc);
+				await new Promise((resolve) => setTimeout(resolve, 100));
+
+				// Position is after the opening quote
+				const pos = fn.length + 1 + ws.length + 1;
+				const position = new vscode.Position(1, pos);
+
+				const completions = await vscode.commands.executeCommand<vscode.CompletionList>(
+					'vscode.executeCompletionItemProvider',
+					doc.uri,
+					position,
+				);
+
+				assert.ok(completions, 'Completions should be returned');
+				assert.ok(completions.items.length > 0, 'Should have completion items');
+
+				const labels = completions.items.map((item) => (typeof item.label === 'string' ? item.label : item.label.label));
+				assert.ok(labels.includes('the_content'), `Should include the_content hook for ${fn}`);
+			});
 		});
-
-		await vscode.window.showTextDocument(doc);
-
-		const position = new vscode.Position(1, 12);
-
-		const completions = await vscode.commands.executeCommand<vscode.CompletionList>(
-			'vscode.executeCompletionItemProvider',
-			doc.uri,
-			position,
-		);
-
-		assert.ok(completions, 'Completions should be returned');
-		assert.ok(completions.items.length > 0, 'Should have completion items');
-
-		// Check for a common WordPress filter
-		const labels = completions.items.map((item) => (typeof item.label === 'string' ? item.label : item.label.label));
-		assert.ok(
-			labels.some((label) => label === 'the_content'),
-			'Should include "the_content" filter',
-		);
 	});
 
 	test('Should not provide hook completions outside of hook functions', async () => {
