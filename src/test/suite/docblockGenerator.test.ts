@@ -87,9 +87,13 @@ suite('Docblock Generator Test Suite', () => {
 			const paramLines = lines.filter((line) => line.includes('@param'));
 			assert.strictEqual(paramLines.length, 2);
 
-			// Check that padding is applied (types and names should be padded)
-			assert.ok(paramLines[0].includes('string'));
-			assert.ok(paramLines[1].includes('int'));
+			// Verify padding: variable names should start at the same column
+			const index1 = paramLines[0].indexOf('$a');
+			const index2 = paramLines[1].indexOf('$longer_name');
+			assert.strictEqual(index1, index2, 'Variable names should be aligned at same column');
+
+			// The first line should have padding after 'string' to align with 'int'
+			assert.ok(paramLines[0].match(/@param\s+string\s+\$a/), 'Should have padding between type and variable');
 		});
 
 		test('Should handle params without types', () => {
