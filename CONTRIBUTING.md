@@ -36,6 +36,13 @@ These are the steps to take to release a new version of the extension (for contr
 1. Prepare a changelog for [the Releases page on GitHub](https://github.com/wp-hooks/vscode-wordpress-hooks/releases).
    - The `git changelog -x` command from [Git Extras](https://github.com/tj/git-extras) is handy for this.
 
+### Renew the VS Marketplace PAT
+
+VS Marketplace uses Azure PATs which always expire before you need to use them.
+
+1. Visit [Azure DevOps -> User settings -> Security -> Personal access tokens](https://dev.azure.com/johnbillion/_usersSettings/tokens) and regenerate the existing token or create a new one
+1. Update the secret in [the VS Code Marketplace environment on GitHub](https://github.com/wp-hooks/vscode-wordpress-hooks/settings/environments/44706953/edit)
+
 ### For Release
 
 1. Ensure you're on the `develop` branch and all the changes for this release have been merged in.
