@@ -85,6 +85,6 @@
 		"typescript": "^5"
 	},
 	"dependencies": {
-		"@wp-hooks/wordpress-core": "^1.10.0"
+		"@wp-hooks/wordpress-core": "^1.11.0"
 	}
 }
