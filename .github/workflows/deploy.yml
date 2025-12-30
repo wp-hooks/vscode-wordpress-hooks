@@ -36,28 +36,8 @@ jobs:
 
   github:
     name: GitHub Milestones
-    runs-on: ubuntu-latest
     permissions:
-      issues: write
-    timeout-minutes: 10
-    steps:
-    - name: Get next versions
-      id: semvers
-      uses: WyriHaximus/github-action-next-semvers@v1.2.1
-      with:
-        version: ${{ github.event.release.tag_name }}
-
-    - name: Create next patch milestone
-      run: gh api "/repos/${{ github.repository }}/milestones" --field "title=${{ steps.semvers.outputs.patch }}" || true
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-
-    - name: Create next minor milestone
-      run: gh api "/repos/${{ github.repository }}/milestones" --field "title=${{ steps.semvers.outputs.minor }}" || true
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-
-    - name: Create next major milestone
-      run: gh api "/repos/${{ github.repository }}/milestones" --field "title=${{ steps.semvers.outputs.major }}" || true
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
+      issues: write # Required for write access to milestones
+    uses: johnbillion/plugin-infrastructure/.github/workflows/reusable-milestones.yml@9203bb0c5423a9a4b395ff5ffd093ba3714d723f # v2.5.1
+    with:
+      version: ${{ github.event.release.tag_name }}
