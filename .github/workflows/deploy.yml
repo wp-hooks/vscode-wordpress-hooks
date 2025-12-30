@@ -5,6 +5,8 @@ on:
   release:
     types: [published]
 
+permissions: {}
+
 jobs:
   vsce:
     name: VS Code Marketplace
@@ -13,6 +15,8 @@ jobs:
     environment:
       name: VS Code Marketplace
       url: https://marketplace.visualstudio.com/items?itemName=johnbillion.vscode-wordpress-hooks
+    permissions:
+      contents: read
     env:
       VSCE_PAT: ${{ secrets.VSCE_TOKEN }}
     steps:
