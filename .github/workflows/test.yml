@@ -15,7 +15,7 @@ concurrency:
 jobs:
   test:
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    name: Linter
+    name: Test
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -40,3 +40,9 @@ jobs:
 
     - name: Run the build
       run: npm run build
+
+    - name: Run tests
+      run: xvfb-run -a npm test
+
+    - name: Run mutation testing
+      run: npm run test:mutation

@@ -72,17 +72,29 @@
 		"deploy-vsce": "vsce publish",
 		"vscode:prepublish": "npm run build",
 		"watch": "tsc --watch",
-		"build": "tsc"
+		"build": "tsc",
+		"pretest": "npm run build",
+		"test": "vscode-test",
+		"test:unit": "mocha --config .mocharc.unit.json",
+		"test:mutation": "stryker run"
 	},
 	"devDependencies": {
+		"@stryker-mutator/core": "^9.1.1",
+		"@stryker-mutator/mocha-runner": "^9.1.1",
+		"@stryker-mutator/typescript-checker": "^9.1.1",
+		"@types/glob": "^8.1.0",
+		"@types/mocha": "^10.0.10",
 		"@types/node": "^20",
 		"@types/vscode": "^1",
 		"@typescript-eslint/eslint-plugin": "^5",
 		"@typescript-eslint/parser": "^5",
+		"@vscode/test-cli": "^0.0.11",
+		"@vscode/test-electron": "^2.5.2",
 		"@vscode/vsce": "^3",
 		"eslint": "^8",
 		"eslint-config-airbnb-base": "^15",
 		"eslint-plugin-import": "^2",
+		"mocha": "^11.7.3",
 		"typescript": "^5"
 	},
 	"dependencies": {
